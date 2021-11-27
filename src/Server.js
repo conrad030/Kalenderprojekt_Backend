@@ -1,8 +1,14 @@
 const express = require("express");
 const mysql = require("mysql2");
 const app = express();
+const cors = require("cors");
 const dotenv = require("dotenv");
 dotenv.config({ path: "./src/config/.env" });
+
+var corsOptions = {
+  origin: `http://localhost:${process.env.PORT}`,
+};
+app.use(cors(corsOptions));
 
 const db = mysql.createConnection({
   port: process.env.DATABASE_PORT,
