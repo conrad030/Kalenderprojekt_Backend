@@ -4,6 +4,26 @@ const app = express();
 const cors = require("cors");
 const dotenv = require("dotenv");
 dotenv.config({ path: "./src/config/.env" });
+const { Sequelize, Model, DataTypes } = require("sequelize");
+
+const sequelize = new Sequelize(
+  process.env.DATABASE_NAME,
+  process.env.DATABASE_USER,
+  process.env.DATABASE_PASSWORD,
+
+  {
+    host: "localhost",
+    dialect: "mysql",
+    logging: false,
+  }
+);
+
+try {
+  sequelize.authenticate();
+  console.log("Sequelize connected");
+} catch (error) {
+  console.error("Sequelize couldn't connect to db: ", error);
+}
 
 var corsOptions = {
   origin: `http://localhost:${process.env.PORT}`,
