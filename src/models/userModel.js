@@ -1,10 +1,10 @@
 const { Sequelize, sequelize } = require("sequelize/dist");
 
 module.exports = (sequelize, Sequelize) => {
-  const Event = sequelize.define("event", {
+  const User = sequelize.define("user", {
     //   field: {
     //     type: Sequelize.STRING,
     //   },
   });
-  return Event;
+  return User;
 };
