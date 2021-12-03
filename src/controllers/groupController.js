@@ -1,4 +1,6 @@
-exports.create = (req, res) => {};
+exports.create = (req, res) => {
+  res.sendStatus(200);
+};
 
 exports.findAll = (req, res) => {};
 
@@ -9,5 +11,3 @@ exports.findInvCode = (req, res) => {};
 exports.update = (req, res) => {};
 
 exports.delete = (req, res) => {};
-
-// exports.deleteAll = (req, res) => {};

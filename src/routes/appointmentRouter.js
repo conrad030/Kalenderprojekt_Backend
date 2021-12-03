@@ -1,18 +1,17 @@
 var express = require("express");
-const controller = require("../controllers/eventController");
+const controller = require("../controllers/appointmentController");
 var router = express.Router();
 
-// Create Event
+// Create Appointment
 router.post("/", controller.create);
 
-// Get all Events
+// Get all Appointment
 router.get("/", controller.findAll);
 
-// Get Event
-router.get("/:id", controller.findOne);
-
-// Update Event
+// Update Appointment
 router.put("/:id", controller.update);
 
-// Delete Event
+// Delete Appointment
 router.delete("/:id", controller.delete);
+
+module.exports = router;

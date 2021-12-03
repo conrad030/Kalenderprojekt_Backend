@@ -37,6 +37,16 @@ const sequelize = new Sequelize(
   }
 );
 
+const teamRouter = require("./routes/teamRouter");
+const appointmentRouter = require("./routes/appointmentRouter");
+const groupRouter = require("./routes/groupRouter");
+const userRouter = require("./routes/userRouter");
+
+app.use("/teams", teamRouter);
+app.use("/appointments", appointmentRouter);
+app.use("/groups", teamRouter);
+app.use("/users", userRouter);
+
 try {
   sequelize.authenticate();
   console.log("Sequelize connected");
