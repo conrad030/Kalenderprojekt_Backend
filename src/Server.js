@@ -3,8 +3,7 @@ const mysql = require("mysql2");
 const app = express();
 const cors = require("cors");
 const dotenv = require("dotenv");
-dotenv.config({ path: "./src/config/.env" });
-const { Sequelize, Model, DataTypes } = require("sequelize");
+dotenv.config();
 
 // MYSQL
 const db = mysql.createConnection({
