@@ -24,19 +24,6 @@ db.connect((err) => {
   }
 });
 
-// Sequelize
-const sequelize = new Sequelize(
-  process.env.DATABASE_NAME,
-  process.env.DATABASE_USER,
-  process.env.DATABASE_PASSWORD,
-
-  {
-    host: "localhost",
-    dialect: "mysql",
-    logging: false,
-  }
-);
-
 const teamRouter = require("./routes/teamRouter");
 const appointmentRouter = require("./routes/appointmentRouter");
 const groupRouter = require("./routes/groupRouter");
@@ -46,13 +33,6 @@ app.use("/teams", teamRouter);
 app.use("/appointments", appointmentRouter);
 app.use("/groups", teamRouter);
 app.use("/users", userRouter);
-
-try {
-  sequelize.authenticate();
-  console.log("Sequelize connected");
-} catch (error) {
-  console.error("Sequelize couldn't connect to db: ", error);
-}
 
 // Connect
 var corsOptions = {
