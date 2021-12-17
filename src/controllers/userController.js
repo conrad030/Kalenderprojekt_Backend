@@ -28,6 +28,6 @@ exports.login = async function (req, res) {
 
 exports.logout = async function (req, res) {
   req.session.destroy();
-  res.clearCookie("connect.sid", { path: "/" });
+  res.clearCookie("session_cookie", { path: "/" });
   res.status(200).json({ message: "user successfully logged out" });
 };
