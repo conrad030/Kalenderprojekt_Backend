@@ -16,8 +16,8 @@ exports.login = async function (req, res) {
   var credentials = Buffer.from(base64Credentials, "base64").toString("ascii");
   var [username, password] = credentials.split(":");
   try {
-    let { id, isAdmin } = await userService.login(username, password);
-    req.session.userId = id;
+    let { userId, isAdmin } = await userService.login(username, password);
+    req.session.userId = userId;
     req.session.isAdmin = isAdmin;
     res.status(200).json({ message: "User successfully logged in" });
   } catch (error) {
@@ -28,6 +28,6 @@ exports.login = async function (req, res) {
 
 exports.logout = async function (req, res) {
   req.session.destroy();
-  res.clearCookie("connect.sid", { path: "/" });
+  res.clearCookie("session_cookie", { path: "/" });
   res.status(200).json({ message: "user successfully logged out" });
 };
