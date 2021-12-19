@@ -11,11 +11,11 @@ exports.create = async function (name, password) {
   // QUERY
   let insertQuery = `
   INSERT INTO SmartCalendar.Group (name, password, invitationCode, colorCode) VALUES (?, ?, ?, 'FFFFFF');`;
-  let results = await db.query(insertQuery, [name, password, invCode]);
-
   let findQuery = `SELECT * FROM SmartCalendar.Group WHERE id = ?;`;
-  let [newGroup, fields] = await db.query(findQuery, [results[0].insertId]);
-  return newGroup[0];
+
+  let results = await db.query(insertQuery, [name, password, invCode]);
+  let newGroup = await this.findOne(results[0].insertId);
+  return newGroup;
 };
 
 exports.findAll = async function () {
@@ -26,45 +26,40 @@ exports.findAll = async function () {
 };
 
 exports.findOne = async function (id) {
+  if (!id) throw new Error("missing arguments");
   let query = `SELECT * FROM SmartCalendar.Group
     WHERE id = ?;`;
 
   let [groups, fields] = await db.query(query, [id]);
   //No groups found
-  if (groups.length == 0) return;
+  if (groups.length === 0) return;
   return groups[0];
 };
 
 exports.update = async function (id, name, password) {
-  if (!id || !name || !password) throw new Error("Invalid data");
-  let updatedGroupQuery = `SELECT * FROM SmartCalendar.Group
-  WHERE id = ?;`;
+  if (!id || !name || !password) throw new Error("missing arguments");
+  var group = await this.findOne(id);
 
+  if (!group) throw new Error("Not found");
   let query = `UPDATE SmartCalendar.Group SET 
   name = ?,
   password = ?
   WHERE id = ?;`;
 
   await db.query(query, [name, password, id]);
-  let [updatedGroups, fields] = await db.query(updatedGroupQuery, [id]);
-  let group = updatedGroups[0];
-  return {
-    id: group.id,
-    name: group.name,
-    createdAt: group.createdAt,
-    invitationCode: group.invitationCode,
-    colorCode: group.colorCode,
-  };
+
+  return group;
 };
 
 exports.delete = async function (id) {
   if (!id) throw new Error("Invalid data");
-  let groupQuery = `SELECT * FROM SmartCalendar.Group WHERE id = ?`;
+  var group = await this.findOne(id);
+
+  if (!group) throw new Error("Not found");
   let deleteQuery = `DELETE from SmartCalendar.Group WHERE id = ?`;
 
-  let [deletedGroups, fields] = await db.query(groupQuery, [id]);
   await db.query(deleteQuery, [id]);
-  return deletedGroups[0];
+  return group;
 };
 
 // TODO: How to detect User that is being added? A param?

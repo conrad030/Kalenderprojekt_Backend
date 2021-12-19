@@ -8,7 +8,10 @@ router.post("/", controller.create);
 // Add member to Team
 router.post("/add/:id", controller.addMember);
 
-// Get Team
+// Get all Teams
+router.get("/", controller.findAll);
+
+// Get one Team
 router.get("/:id", controller.findOne);
 
 // Update Team
