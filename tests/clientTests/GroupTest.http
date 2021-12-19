@@ -1,0 +1,9 @@
+POST http://localhost:8000/group/create
+Content-Type: application/json
+
+{
+  "name": "NewGroup",
+  "password": "geheimesPasswort"
+}
+
+###

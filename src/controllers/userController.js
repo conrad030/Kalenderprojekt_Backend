@@ -1,3 +1,33 @@
-exports.signup = (req, res) => {};
+const userService = require("../services/userService");
 
-exports.login = (req, res) => {};
+exports.signup = async function (req, res) {
+  let { username, email, password } = req.body;
+  try {
+    let newUser = await userService.createUser(username, email, password);
+    res.status(201).json({ message: "user successfully created" });
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({ message: "bad input" });
+  }
+};
+
+exports.login = async function (req, res) {
+  var base64Credentials = req.headers.authorization.split(" ")[1];
+  var credentials = Buffer.from(base64Credentials, "base64").toString("ascii");
+  var [username, password] = credentials.split(":");
+  try {
+    let { id, isAdmin } = await userService.login(username, password);
+    req.session.userId = id;
+    req.session.isAdmin = isAdmin;
+    res.status(200).json({ message: "User successfully logged in" });
+  } catch (error) {
+    console.log(error.message);
+    res.status(404).json({ message: "Bad input" });
+  }
+};
+
+exports.logout = async function (req, res) {
+  req.session.destroy();
+  res.clearCookie("connect.sid", { path: "/" });
+  res.status(200).json({ message: "user successfully logged out" });
+};
