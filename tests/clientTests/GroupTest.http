@@ -1,3 +1,4 @@
+# Create group
 POST http://localhost:8000/groups/create
 Content-Type: application/json
 
@@ -8,17 +9,20 @@ Content-Type: application/json
 
 ###
 
+# Get all groups
 GET http://localhost:8000/groups/ 
 Content-Type: application/json
 
 ###
 
-GET http://localhost:8000/groups/1
+# Get specific group
+GET http://localhost:8000/groups/19
 Content-Type: application/json
 
 ###
 
-PUT http://localhost:8000/groups/1
+# Update group
+PUT http://localhost:8000/groups/
 Content-Type: application/json
 
 {
@@ -28,5 +32,6 @@ Content-Type: application/json
 
 ###
 
-DELETE http://localhost:8000/groups/11
+# Delete group
+DELETE http://localhost:8000/groups/18
 Content-Type: application/json
