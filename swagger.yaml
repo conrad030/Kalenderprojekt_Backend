@@ -1,0 +1,673 @@
+openapi: 3.0.0
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/Kalenderprojekt/Kalender-Backup/1.0.0
+info:
+  description: Kalender-Backup API
+  version: "1.0.0"
+  title: Kalender-Backup API
+  license:
+    name: Apache 2.0
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+security:
+  - Authentication: []
+paths:
+  /users/signup:
+    post:
+      tags:
+        - User
+      security: []
+      description: user signup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserSignupBody"
+      responses:
+        "201":
+          description: user successfully created
+        "400":
+          description: dublicate name or email
+        "404":
+          description: bad input
+  /users/login:
+    post:
+      tags:
+        - User
+      security:
+        - BasicAuth: []
+      description: User login
+      responses:
+        "200":
+          description: User successfully created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserSchema"
+        "404":
+          description: Bad input
+  /groups/create:
+    post:
+      tags:
+        - Group
+      description: Create new group
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateGroupSchema"
+      responses:
+        "201":
+          description: Group successfully created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupSchema"
+        "400":
+          description: Bad input
+        "401":
+          description: Missing authentication
+  /groups:
+    get:
+      tags:
+        - Group
+      description: Get all groups
+      responses:
+        "200":
+          description: All groups
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GroupSchema"
+        "401":
+          description: Missing authentication
+        "403":
+          description: Not authorized
+  /groups/{id}:
+    get:
+      tags:
+        - Group
+      description: Get specific group
+      parameters:
+        - in: path
+          name: id
+          description: Pass specific ID of group
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Found matching group
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupSchema"
+        "401":
+          description: Missing authentication
+        "403":
+          description: Not authorized
+        "404":
+          description: Not found
+    put:
+      tags:
+        - Group
+      description: Changes group data
+      parameters:
+        - in: path
+          name: id
+          description: Pass specific ID of group
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateGroupSchema"
+      responses:
+        "200":
+          description: Successfully changed group data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupSchema"
+        "401":
+          description: Missing authentication
+        "403":
+          description: Not authorized
+        "404":
+          description: Not found
+    delete:
+      tags:
+        - Group
+      description: Deletes group
+      parameters:
+        - in: path
+          name: id
+          description: Pass specific ID of group
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Successfully deleted group
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupSchema"
+        "401":
+          description: Missing authentication
+        "403":
+          description: Not authorized
+        "404":
+          description: Not found
+  /groups/invitation/{code}:
+    get:
+      tags:
+        - Group
+      description: Deletes group
+      parameters:
+        - in: path
+          name: code
+          description: Pass group invitation code
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully joined group
+        "400":
+          description: User is already member
+        "401":
+          description: Missing authentication
+        "404":
+          description: Not found
+  /appointments:
+    post:
+      tags:
+        - Appointment
+      description: Creates new appointment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAppointmentSchema"
+      responses:
+        "201":
+          description: Successfully created appointment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppointmentSchema"
+        "400":
+          description: Bad input
+        "401":
+          description: Missing authentication
+  /groups/appointments/{id}:
+    get:
+      tags:
+        - Appointment
+      description: Get all appointments for group
+      parameters:
+        - in: path
+          name: id
+          description: Pass specific ID of group
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: All appointments for group
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AppointmentSchema"
+        "401":
+          description: Missing authentication
+        "404":
+          description: Group ID not found
+  /appointments/{id}:
+    get:
+      tags:
+        - Appointment
+      description: Get specific appointment
+      parameters:
+        - in: path
+          name: id
+          description: Pass specific ID of appointment
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Specific appointment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppointmentSchema"
+        "401":
+          description: Missing authentication
+        "403":
+          description: Not authorized
+        "404":
+          description: Appointment not found
+    put:
+      tags:
+        - Appointment
+      description: Edit appointment
+      parameters:
+        - in: path
+          name: id
+          description: Pass specific ID of appointment
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EditAppointmentSchema"
+      responses:
+        "200":
+          description: Updated appointment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppointmentSchema"
+        "401":
+          description: Missing authentication
+        "403":
+          description: Not authorized
+        "404":
+          description: Appointment not found
+    delete:
+      tags:
+        - Appointment
+      description: Delete appointment
+      parameters:
+        - in: path
+          name: id
+          description: Pass specific ID of appointment
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted appointment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppointmentSchema"
+        "401":
+          description: Missing authentication
+        "403":
+          description: Not authorized
+        "404":
+          description: Appointment not found
+  /teams:
+    # GET ALL TEAMS
+    get:
+      tags:
+        - Teams
+      description: get all teams for group
+      responses:
+        "200":
+          description: got all teams for group
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "$/components/schema/TeamSchema"
+        "400":
+          description: wrong or missing group id
+        "401":
+          description: not authorized
+
+    # CREATE TEAM
+    post:
+      tags:
+        - Teams
+      description: create team in group
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TeamSchema"
+      responses:
+        "201":
+          description: created team
+        "400":
+          description: team name already exists
+        "401":
+          description: not authorized
+        "403":
+          description: missing rights
+  /teams/{id}:
+    # GET ONE TEAM
+    get:
+      parameters:
+        - in: path
+          name: id
+          description: Pass specific ID of team
+          required: true
+          schema:
+            type: integer
+      tags:
+        - Teams
+      description: get one team
+      responses:
+        "200":
+          description: found team
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeamSchema"
+        "400":
+          description: wrong or missing groupId
+        "401":
+          description: not authorized
+    # UPDATE TEAM
+    put:
+      parameters:
+        - in: path
+          name: id
+          description: Pass specific ID of team
+          required: true
+          schema:
+            type: integer
+      tags:
+        - Teams
+      description: update team
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TeamSchema"
+      responses:
+        "200":
+          description: updated team
+        "400":
+          description: team name already exists
+        "401":
+          description: not authorized
+        "403":
+          description: missing rights
+    # DELETE TEAM
+    delete:
+      parameters:
+        - in: path
+          name: id
+          description: Pass specific ID of team
+          required: true
+          schema:
+            type: integer
+      tags:
+        - Teams
+      description: delete team
+      responses:
+        "200":
+          description: deleted team
+        "401":
+          description: not authorized
+        "403":
+          description: missing rights
+        "404":
+          description: not found
+  /teams/add/{id}:
+    # ADD USER TO TEAM
+    post:
+      parameters:
+        - in: path
+          name: id
+          description: Pass specific ID of team
+          required: true
+          schema:
+            type: integer
+      tags:
+        - Teams
+      description: add user to team
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TeamSchema"
+      responses:
+        "201":
+          description: added user to team
+        "400":
+          description: user already in team
+        "401":
+          description: not authorized
+        "403":
+          description: missing rights
+components:
+  securitySchemes:
+    Authentication:
+      type: apiKey
+      in: header
+      name: Authentication
+    BasicAuth:
+      type: http
+      scheme: basic
+  schemas:
+    UserSignupBody:
+      type: object
+      required:
+        - username
+        - email
+        - password
+      properties:
+        username:
+          type: string
+          example: testUser
+        email:
+          type: string
+          example: test@user.com
+        password:
+          type: string
+          example: geheimesPasswort
+    UserSchema:
+      type: object
+      required:
+        - id
+        - username
+        - email
+        - isAdmin
+        - createdAt
+      properties:
+        id:
+          type: integer
+          example: 1
+        username:
+          type: string
+          example: "testUser"
+        email:
+          type: string
+          example: "test@user.com"
+        isAdmin:
+          type: boolean
+          example: false
+        createdAt:
+          type: string
+          format: date-time
+          example: "2021-07-21T17:32:28Z"
+    CreateGroupSchema:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "NewGroup"
+        password:
+          type: string
+          example: "geheimesPasswort"
+    GroupSchema:
+      type: object
+      required:
+        - id
+        - name
+        - createdAt
+        - invitationCode
+        - colorCode
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "NewGroup"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2021-07-21T17:32:28Z"
+        invitationCode:
+          type: string
+          example: "eL2dE9"
+        colorCode:
+          type: string
+          example: "AD3C43"
+    CreateAppointmentSchema:
+      type: object
+      required:
+        - groupId
+        - title
+        - startDate
+        - startTime
+        - endTime
+        - colorCode
+      properties:
+        groupId:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: "Projektmeeting"
+        startDate:
+          type: string
+          format: date
+          example: "2021-12-15"
+        startTime:
+          type: string
+          format: time
+          example: "12:00:00"
+        endTime:
+          type: string
+          format: time
+          example: "13:30:00"
+        colorCode:
+          type: string
+          example: "FF21CA"
+        description:
+          type: string
+          example: "Ein sehr wichtiges Projektmeeting"
+        repeatInterval:
+          type: integer
+          example: 7
+        maxOccurences:
+          type: integer
+          example: 4
+        parentId:
+          type: integer
+    AppointmentSchema:
+      type: object
+      required:
+        - id
+        - groupId
+        - title
+        - startDate
+        - startTime
+        - endTime
+        - colorCode
+        - createdBy
+      properties:
+        id:
+          type: integer
+          example: 1
+        groupId:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: "Projektmeeting"
+        startDate:
+          type: string
+          format: date
+          example: "2021-12-15"
+        startTime:
+          type: string
+          format: time
+          example: "12:00:00"
+        endTime:
+          type: string
+          format: time
+          example: "13:30:00"
+        colorCode:
+          type: string
+          example: "FF21CA"
+        description:
+          type: string
+          example: "Ein sehr wichtiges Projektmeeting"
+        repeatInterval:
+          type: integer
+          example: 7
+        maxOccurences:
+          type: integer
+          example: 4
+        parentId:
+          type: integer
+          example: 1
+        createdBy:
+          type: integer
+          example: 1
+    EditAppointmentSchema:
+      type: object
+      properties:
+        groupId:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: "Projektmeeting"
+        startDate:
+          type: string
+          format: date
+          example: "2021-12-15"
+        startTime:
+          type: string
+          format: time
+          example: "12:00:00"
+        endTime:
+          type: string
+          format: time
+          example: "13:30:00"
+        colorCode:
+          type: string
+          example: "FF21CA"
+        description:
+          type: string
+          example: "Ein sehr wichtiges Projektmeeting"
+        repeatInterval:
+          type: integer
+          example: 7
+        parentId:
+          type: integer
+        maxOccurences:
+          type: integer
+          example: 4
+    TeamSchema:
+      type: object
+      properties:
+        groupId:
+          type: integer
+          example: 123456
+        name:
+          type: string
+          example: "Team 1"
+        color:
+          type: string
+          example: "B3B3B3"
