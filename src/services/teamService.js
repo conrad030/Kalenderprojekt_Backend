@@ -17,6 +17,6 @@ exports.findOne = async function (name) {
 `;
   let [teams, fields] = await db.query(query);
   //No team found
-  if (teams.length == 0) return;
+  if (teams.length === 0) return;
   return teams[0];
 };

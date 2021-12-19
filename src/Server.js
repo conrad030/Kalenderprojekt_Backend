@@ -53,7 +53,7 @@ const userRouter = require("./routes/userRouter");
 
 app.use("/teams", teamRouter);
 app.use("/appointments", appointmentRouter);
-app.use("/groups", teamRouter);
+app.use("/groups", groupRouter);
 app.use("/users", userRouter);
 
 // Connect

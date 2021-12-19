@@ -7,11 +7,15 @@ exports.create = async function (name, password) {
   // Group name existance check left out
 
   //   TODO: Generate invite code
-  let invCode = "https://fillerLink.com";
+  let invCode = "asdfg";
   // QUERY
-  let query = `INSERT INTO SmartCalendar.Group (name, password, invitationCode, colorCode) 
-    VALUES (?, ?, ?, FFFFFF);`;
-  let exec = await db.query(query, [name, password, invCode]);
+  let insertQuery = `
+  INSERT INTO SmartCalendar.Group (name, password, invitationCode, colorCode) VALUES (?, ?, ?, 'FFFFFF');`;
+  let results = await db.query(insertQuery, [name, password, invCode]);
+
+  let findQuery = `SELECT * FROM SmartCalendar.Group WHERE id = ?;`;
+  let [newGroup, fields] = await db.query(findQuery, [results[0].insertId]);
+  return newGroup[0];
 };
 
 exports.findAll = async function () {
@@ -33,11 +37,16 @@ exports.findOne = async function (id) {
 
 exports.update = async function (id, name, password) {
   if (!id || !name || !password) throw new Error("Invalid data");
+  let updatedGroupQuery = `SELECT * FROM SmartCalendar.Group
+  WHERE id = ?;`;
+
   let query = `UPDATE SmartCalendar.Group SET 
   name = ?,
-  password = ?,
+  password = ?
   WHERE id = ?;`;
-  let [updatedGroups, fields] = await db.query(query, [id, name, password]);
+
+  await db.query(query, [name, password, id]);
+  let [updatedGroups, fields] = await db.query(updatedGroupQuery, [id]);
   let group = updatedGroups[0];
   return {
     id: group.id,
@@ -50,14 +59,22 @@ exports.update = async function (id, name, password) {
 
 exports.delete = async function (id) {
   if (!id) throw new Error("Invalid data");
-  let query = `DELETE from SmartCalendar.Group WHERE id = ?'`;
-  await db.query(query, [id]);
+  let groupQuery = `SELECT * FROM SmartCalendar.Group WHERE id = ?`;
+  let deleteQuery = `DELETE from SmartCalendar.Group WHERE id = ?`;
+
+  let [deletedGroups, fields] = await db.query(groupQuery, [id]);
+  await db.query(deleteQuery, [id]);
+  return deletedGroups[0];
 };
 
-exports.findInvCode = async function (id) {
-  if (!id) throw new Error("Invalid data");
-  let query = `SELECT invitationCode FROM SmartCalendar.Group 
-  WHERE id = ? `;
-  let [invCodes, fields] = await db.query(query, [id]);
-  return invCodes[0];
+// TODO: How to detect User that is being added? A param?
+// TODO: clear up isAdmin
+exports.joinGroup = async function (invCode, user) {
+  if (!invCode) throw new Error("Invalid data");
+  let groupQuery = `SELECT * FROM SmartCalendar.Group 
+  WHERE invitationCode = ?`;
+  let [group, fields] = await db.query(query, [invCode]);
+  let query = `INSERT INTO SmartCalendar.Group_Member (groupId, userId, isAdmin)
+  VALUES (?, ?, ?)`;
+  await db.query(query, [group[0].id, user.id, user.isAdmin]);
 };

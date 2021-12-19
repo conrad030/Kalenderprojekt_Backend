@@ -1,5 +1,5 @@
 exports.create = (req, res) => {
-  res.sendStatus(200);
+  res.status(200);
 };
 
 exports.addMember = (req, res) => {};

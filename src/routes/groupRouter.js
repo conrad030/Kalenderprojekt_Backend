@@ -18,7 +18,7 @@ router.get("/teams/:id", controller.findAll);
 router.get("/appointments/:id", controller.findOne);
 
 // Get invitation code
-router.get("/invitation/:code", controller.findInvCode);
+router.get("/invitation/:code", controller.joinGroup);
 
 // Update Group
 router.put("/:id", controller.update);
