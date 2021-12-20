@@ -64,6 +64,8 @@ exports.delete = async function (id) {
 
 // TODO: How to detect User that is being added? A param?
 // TODO: clear up isAdmin
+// TODO: Auto-join user to group on create
+
 exports.joinGroup = async function (invCode, user) {
   if (!invCode) throw new Error("Invalid data");
   let groupQuery = `SELECT * FROM SmartCalendar.Group 

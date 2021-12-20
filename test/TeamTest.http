@@ -4,7 +4,7 @@ Content-Type: application/json
 
 {
   "groupId": 10,
-  "name": "Team 2",
+  "name": "Team 3",
   "colorCode": "FFFFFF"
 }
 

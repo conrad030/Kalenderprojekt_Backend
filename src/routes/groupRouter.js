@@ -1,29 +1,38 @@
 var express = require("express");
 const controller = require("../controllers/groupController");
 var router = express.Router();
+const middleware = require("../middleware/Middleware");
 
 // Create Group
-router.post("/create", controller.create);
+router.post("/create", middleware.checkAuthentication, controller.create);
 
 // Get all Groups
-router.get("/", controller.findAll);
+router.get("/", middleware.checkAuthentication, controller.findAll);
 
 // Get Group
-router.get("/:id", controller.findOne);
+router.get("/:id", middleware.checkAuthentication, controller.findOne);
 
 // Get all Teams of Group
-router.get("/teams/:id", controller.findAll);
+router.get("/teams/:id", middleware.checkAuthentication, controller.findAll);
 
 // Get Appointment
-router.get("/appointments/:id", controller.findOne);
+router.get(
+  "/appointments/:id",
+  middleware.checkAuthentication,
+  controller.findOne
+);
 
 // Get invitation code
-router.get("/invitation/:code", controller.joinGroup);
+router.get(
+  "/invitation/:code",
+  middleware.checkAuthentication,
+  controller.joinGroup
+);
 
 // Update Group
-router.put("/:id", controller.update);
+router.put("/:id", middleware.checkAuthentication, controller.update);
 
 // Delete Group
-router.delete("/:id", controller.delete);
+router.delete("/:id", middleware.checkAuthentication, controller.delete);
 
 module.exports = router;
