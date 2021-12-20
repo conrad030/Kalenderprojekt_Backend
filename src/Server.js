@@ -14,6 +14,8 @@ const db = require("./database/Database");
 db.initDb((error, db) => {
   if (error) {
     console.log(error);
+  } else {
+    console.log("DB connected");
   }
 });
 
