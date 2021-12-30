@@ -55,7 +55,7 @@ const userRouter = require("./routes/userRouter");
 
 app.use("/teams", teamRouter);
 app.use("/appointments", appointmentRouter);
-app.use("/groups", teamRouter);
+app.use("/groups", groupRouter);
 app.use("/users", userRouter);
 
 // Connect
@@ -69,3 +69,5 @@ const port = process.env.PORT;
 app.listen(port, () => {
   console.log("Server started on port " + port);
 });
+
+module.exports = app;

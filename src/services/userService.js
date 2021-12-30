@@ -28,7 +28,7 @@ exports.login = async function (username, password) {
   }
 };
 
-exports.findOne = async function findOne(username) {
+exports.findOne = async function (username) {
   let query = `SELECT * FROM SmartCalendar.User 
     WHERE username=\'${username}\'`;
 
