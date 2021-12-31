@@ -1,4 +1,4 @@
-POST http://localhost:8000/users/signup
+POST http://localhost:8080/users/signup
 Content-Type: application/json
 
 {
@@ -11,8 +11,8 @@ Content-Type: application/json
 //dGVzdDphYmM= correct
 //dGVzdDp3cm9uZw== wrong password
 //d3Jvbmc6d3Jvbmc= wrong data
-POST http://localhost:8000/users/login
-Authorization: Bearer dGVzdGluZzphYmM=
+POST http://localhost:8080/users/login
+Authorization: Bearer dGVzdDphYmM=
 
 ###
-POST http://localhost:8000/users/logout
+POST http://localhost:8080/users/logout

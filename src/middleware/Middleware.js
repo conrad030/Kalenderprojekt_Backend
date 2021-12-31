@@ -1,6 +1,5 @@
 function checkAuthentication(req, res, next) {
   //If user is authenticated
-  console.log(req.session);
   if (req.session.userId) {
     next();
   } else {
