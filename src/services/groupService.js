@@ -1,4 +1,5 @@
 const { log } = require("console");
+const { toUnicode } = require("punycode");
 
 const db = require("../database/Database").initDb();
 
@@ -6,7 +7,8 @@ exports.create = async function (name, password) {
   if (!name || !password) throw new Error("Invalid data");
   // Group name existance check left out
 
-  //   TODO: Generate invite code
+  // TODO: Generate invite code
+  // TODO: Create GroupMember when group is created and make them admin
   let invCode = "asdfg";
   // QUERY
   let insertQuery = `
