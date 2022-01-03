@@ -7,6 +7,7 @@ function checkAuthentication(req, res, next) {
   }
 }
 
+//Rename to checkIsAdmin
 function checkAuthorization(req, res, next) {
   //If user is authorized
   if (req.session.isAdmin) {
