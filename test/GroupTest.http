@@ -2,10 +2,10 @@
 POST http://localhost:8000/groups/create
 Content-Type: application/json
 
-{
-  "name": "NewGroup",
-  "password": "geheimesPasswort"
-}
+# {
+#   "name": "NewGroup",
+#   "password": "geheimesPasswort"
+# }
 
 ###
 
