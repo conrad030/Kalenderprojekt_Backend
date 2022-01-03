@@ -38,7 +38,6 @@ exports.findOne = async function (id) {
 
 exports.update = async function (id, name, password) {
   if (!id || !name || !password) throw new Error("missing arguments");
-  var group = await this.findOne(id);
 
   if (!group) throw new Error("Not found");
   let query = `UPDATE SmartCalendar.Group SET 
@@ -47,6 +46,7 @@ exports.update = async function (id, name, password) {
   WHERE id = ?;`;
 
   await db.query(query, [name, password, id]);
+  var group = await this.findOne(id);
 
   return group;
 };
