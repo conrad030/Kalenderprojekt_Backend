@@ -22,7 +22,7 @@ db.initDb((error, db) => {
 //Session Store
 let options = {
   port: process.env.DATABASE_PORT,
-  host: "localhost",
+  host: "db-smartcalendar-mysql-do-user-10435412-0.b.db.ondigitalocean.com",
   user: process.env.DATABASE_USER,
   password: process.env.DATABASE_PASSWORD,
   database: process.env.DATABASE_NAME,
