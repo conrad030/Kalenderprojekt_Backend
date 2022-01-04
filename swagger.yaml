@@ -10,8 +10,6 @@ info:
   license:
     name: Apache 2.0
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-security:
-  - Authentication: []
 paths:
   /users/signup:
     post:
@@ -47,6 +45,59 @@ paths:
                 $ref: "#/components/schemas/UserSchema"
         "404":
           description: Bad input
+  /users/group/{id}:
+    post:
+      tags:
+        - User
+      description: Get all users of a group or a team of a group
+      parameters:
+        - in: path
+          name: id
+          description: Pass specific ID of a group
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Pass specific ID of a team
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TeamIdSchema"
+      responses:
+        "200":
+          description: All users of a group or a team of a group
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserSchema"
+        "404":
+          description: Not found
+  /users/{id}:
+    delete:
+      tags:
+        - User
+      description: Delete a user
+      parameters:
+        - in: path
+          name: id
+          description: Pass specific ID of a user
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Delete user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserSchema"
+        "404":
+          description: Not found
+        "403":
+          description: Not authorized
   /groups/create:
     post:
       tags:
@@ -164,11 +215,70 @@ paths:
           description: Not authorized
         "404":
           description: Not found
+  /groups/teams/{id}:
+    get:
+      tags:
+        - Group
+      description: Get all teams in group
+      parameters:
+        - in: path
+          name: id
+          description: Pass specific ID of group
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Got all teams for group
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TeamSchema"
+        "401":
+          description: Missing authentication
+        "403":
+          description: Forbidden
+        "404":
+          description: Not found
+  /groups/teams/members/{id}:
+    post:
+      tags:
+        - Group
+      description: Get all members of team
+      parameters:
+        - in: path
+          name: id
+          description: Pass specific ID of team
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GroupIdSchema"
+      responses:
+        "200":
+          description: Found matching group
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserSchema"
+        "401":
+          description: Missing authentication
+        "403":
+          description: Not authorized
+        "404":
+          description: Not found
   /groups/invitation/{code}:
     get:
       tags:
         - Group
-      description: Deletes group
+      description: To acces a group
       parameters:
         - in: path
           name: code
@@ -206,7 +316,7 @@ paths:
           description: Bad input
         "401":
           description: Missing authentication
-  /groups/appointments/{id}:
+  /appointments/groups/{id}:
     get:
       tags:
         - Appointment
@@ -313,7 +423,7 @@ paths:
     # GET ALL TEAMS
     get:
       tags:
-        - Teams
+        - Team
       description: get all teams for group
       responses:
         "200":
@@ -323,7 +433,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "$/components/schema/TeamSchema"
+                  $ref: "#/components/schemas/TeamSchema"
         "400":
           description: wrong or missing group id
         "401":
@@ -332,7 +442,7 @@ paths:
     # CREATE TEAM
     post:
       tags:
-        - Teams
+        - Team
       description: create team in group
       requestBody:
         content:
@@ -359,7 +469,7 @@ paths:
           schema:
             type: integer
       tags:
-        - Teams
+        - Team
       description: get one team
       responses:
         "200":
@@ -382,7 +492,7 @@ paths:
           schema:
             type: integer
       tags:
-        - Teams
+        - Team
       description: update team
       requestBody:
         content:
@@ -408,7 +518,7 @@ paths:
           schema:
             type: integer
       tags:
-        - Teams
+        - Team
       description: delete team
       responses:
         "200":
@@ -419,8 +529,7 @@ paths:
           description: missing rights
         "404":
           description: not found
-  /teams/add/{id}:
-    # ADD USER TO TEAM
+  /team/member/{id}:
     post:
       parameters:
         - in: path
@@ -430,13 +539,13 @@ paths:
           schema:
             type: integer
       tags:
-        - Teams
+        - Team
       description: add user to team
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/TeamSchema"
+              $ref: "#/components/schemas/User_Team_Schema"
       responses:
         "201":
           description: added user to team
@@ -446,12 +555,32 @@ paths:
           description: not authorized
         "403":
           description: missing rights
+    delete:
+      tags:
+        - Team
+      description: Deletes team member
+      parameters:
+        - in: path
+          name: id
+          description: Pass specific ID of team member
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Successfully deleted team member
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User_Team_Schema"
+        "401":
+          description: Missing authentication
+        "403":
+          description: Not authorized
+        "404":
+          description: Not found
 components:
   securitySchemes:
-    Authentication:
-      type: apiKey
-      in: header
-      name: Authentication
     BasicAuth:
       type: http
       scheme: basic
@@ -671,3 +800,27 @@ components:
         color:
           type: string
           example: "B3B3B3"
+    User_Team_Schema:
+      type: object
+      required:
+        - userId
+      properties:
+        userId:
+          type: integer
+          example: 1
+    GroupIdSchema:
+      type: object
+      required:
+        - groupId
+      properties:
+        groupId:
+          type: integer
+          example: 1
+    TeamIdSchema:
+      type: object
+      required:
+        - teamId
+      properties:
+        teamId:
+          type: integer
+          example: 1

@@ -6,8 +6,9 @@ const middleware = require("../middleware/Middleware");
 // Create Appointment
 router.post("/", middleware.checkAuthentication, controller.create);
 
-// Get all Appointment
-router.get("/", middleware.checkAuthentication, controller.findAll);
+// Get all Appointments for group
+//TODO: Nur wenn man Mitglied in der Gruppe ist
+router.get("/:id", middleware.checkAuthentication, controller.findAll);
 
 // Update Appointment
 router.put("/:id", middleware.checkAuthentication, controller.update);

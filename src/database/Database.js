@@ -19,6 +19,7 @@ function initDb(callback) {
     };
 
     db = mysql.createPool(options).promise();
+    callback(null, db);
 
     // db.connect((err) => {
     //   if (err) {
