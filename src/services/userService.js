@@ -1,22 +1,30 @@
 const db = require("../database/Database").initDb();
 const bcrypt = require("bcrypt");
+const { ServiceError } = require("../errors");
 
 exports.createUser = async function (username, email, password) {
-  if (!username || !email || !password) throw new Error("Invalid data");
-  if (await this.findOne(username)) throw new Error("username already exists");
-  if (await findByEmail(email)) throw new Error("email already exists");
+  if (!username || !email || !password)
+    throw new ServiceError("Missing data", 400);
+  if (await this.findOneWithUsername(username))
+    throw new ServiceError("username already exists", 400);
+  if (await findByEmail(email))
+    throw new ServiceError("email already exists", 400);
   //Query
   let hash = await bcrypt.hash(password, 5);
   let query = `
         INSERT INTO SmartCalendar.User (username, email, password)
         VALUES (\'${username}\', \'${email}\', \'${hash}\');
         `;
-  let _ = await db.query(query);
+  try {
+    let _ = await db.query(query);
+  } catch (error) {
+    throw new ServiceError("Internal server error", 500);
+  }
 };
 
 exports.login = async function (username, password) {
   if (!username || !password) throw new Error("invalid data");
-  var user = await this.findOne(username);
+  var user = await this.findOneWithUsername(username);
   if (!user) throw new Error("Not found");
   let result = await bcrypt.compare(password, user.password);
   if (result) {
@@ -28,11 +36,21 @@ exports.login = async function (username, password) {
   }
 };
 
-exports.findOne = async function (username) {
+exports.findOneWithUsername = async function (username) {
   let query = `SELECT * FROM SmartCalendar.User 
-    WHERE username=\'${username}\'`;
+    WHERE username = ?;`;
 
-  let [users, fields] = await db.query(query);
+  let [users, fields] = await db.query(query, [username]);
+  //No user found
+  if (users.length == 0) return;
+  return users[0];
+};
+
+exports.findOne = async function (id) {
+  let query = `SELECT * FROM SmartCalendar.User 
+    WHERE id = ?;`;
+
+  let [users, fields] = await db.query(query, [id]);
   //No user found
   if (users.length == 0) return;
   return users[0];
