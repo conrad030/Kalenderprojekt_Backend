@@ -22,7 +22,8 @@ exports.create = async function (req, res) {
       colorCode,
       description,
       repeatInterval,
-      maxOccurences
+      maxOccurences,
+      req.session.userId
     );
     res.status(201).json(newAppointment);
   } catch (error) {
@@ -41,7 +42,18 @@ exports.findAll = async function (req, res) {
   }
 };
 
-exports.findOne = (req, res) => {};
+exports.findOne = async function (req, res) {
+  try {
+    let appointment = await appointmentService.findOne(req.params.id);
+    if (appointment !== undefined) {
+      res.status(200).json(appointment);
+    } else {
+      res.status(404).json({ message: "Appointment not found" });
+    }
+  } catch (error) {
+    res.status(error.statusCode).json({ message: error.message });
+  }
+};
 
 exports.update = async function (req, res) {
   try {
@@ -55,7 +67,7 @@ exports.update = async function (req, res) {
       repeatInterval,
       maxOccurences,
     } = req.body;
-    await appointmentService.updateAppointment(
+    let updatedAppointment = await appointmentService.updateAppointment(
       title,
       startDate,
       startTime,
@@ -66,10 +78,31 @@ exports.update = async function (req, res) {
       maxOccurences,
       req.params.id
     );
-    res.status(200).json({ message: "Updated appointment" });
+    res.status(200).json(updatedAppointment);
   } catch (error) {
     res.status(error.statusCode).json({ message: error.message });
   }
 };
 
-exports.delete = (req, res) => {};
+exports.delete = async function (req, res) {
+  try {
+    let deletedAppointment = await appointmentService.deleteAppointment(
+      req.params.id
+    );
+    res.status(200).json(deletedAppointment);
+  } catch (error) {
+    res.status(error.statusCode).json({ message: error.message });
+  }
+};
+
+exports.addMember = async function (req, res) {
+  try {
+    let updatedAppointment = await appointmentService.addMember(
+      req.query.appointmentId,
+      req.query.userId
+    );
+    res.status(200).json(updatedAppointment);
+  } catch (error) {
+    res.status(error.statusCode).json({ message: error.message });
+  }
+};

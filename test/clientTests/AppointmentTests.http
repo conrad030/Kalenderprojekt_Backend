@@ -13,17 +13,26 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:8080/appointments/1
+GET http://localhost:8080/appointments/groups/1
+
+###
+GET http://localhost:8080/appointments/10
+
+###
+DELETE http://localhost:8080/appointments/19
 
 ###
 PUT http://localhost:8080/appointments/5
 Content-Type: application/json
 
 {
-  "title": "Projektmeeting",
+  "title": "Projektmeeting 2",
   "startDate": "2021-12-15",
   "startTime": "12:00:00",
   "endTime": "13:30:00",
   "description": "Ein sehr wichtiges Projektmeeting",
   "colorCode": "FF21CA"
 }
+
+###
+POST http://localhost:8080/appointments/member?appointmentId=19&userId=1
