@@ -1,0 +1,38 @@
+# Create team
+POST http://localhost:8000/teams
+Content-Type: application/json
+
+{
+  "groupId": 10,
+  "name": "Team 3",
+  "colorCode": "FFFFFF"
+}
+
+###
+
+# Get all teams
+GET http://localhost:8000/teams/ 
+Content-Type: application/json
+
+###
+
+# Get one team
+GET http://localhost:8000/teams/1
+Content-Type: application/json
+
+###
+
+# Update team
+PUT http://localhost:8000/teams/1
+Content-Type: application/json
+
+{
+  "groupId": 10,
+  "name": "Changed Team Name 2",
+  "colorCode": "FFFFFF"
+}
+###
+
+# Delete team
+DELETE http://localhost:8000/teams/1
+Content-Type: application/json

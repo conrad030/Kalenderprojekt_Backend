@@ -1,0 +1,19 @@
+POST http://localhost:8080/users/signup
+Content-Type: application/json
+
+{
+    "username": "test",
+    "email": "testing@user.com",
+    "password": "abc"
+}
+
+###
+//dGVzdDphYmM= correct
+//dGVzdDp3cm9uZw== wrong password
+//d3Jvbmc6d3Jvbmc= wrong data
+//dGVzdDE6YWJj also correct
+POST http://localhost:8080/users/login
+Authorization: Bearer dGVzdDphYmM=
+
+###
+POST http://localhost:8080/users/logout

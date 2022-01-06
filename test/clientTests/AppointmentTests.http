@@ -1,0 +1,44 @@
+POST http://localhost:8080/appointments
+Content-Type: application/json
+
+{
+  "groupId": 1,
+  "title": "Projektmeeting",
+  "startDate": "2021-12-15",
+  "startTime": "12:00:00",
+  "endTime": "13:30:00",
+  "colorCode": "FF21CA",
+  "description": "Ein sehr wichtiges Projektmeeting",
+  "colorCode": "FFFFFF"
+}
+
+###
+GET http://localhost:8080/appointments/groups/1
+
+###
+GET http://localhost:8080/appointments/2
+
+###
+DELETE http://localhost:8080/appointments/3
+
+###
+PUT http://localhost:8080/appointments/3
+Content-Type: application/json
+
+{
+  "title": "Projektmeeting 2",
+  "startDate": "2021-12-15",
+  "startTime": "12:00:00",
+  "endTime": "13:30:00",
+  "description": "Ein sehr wichtiges Projektmeeting",
+  "colorCode": "FF21CA"
+}
+
+###
+POST http://localhost:8080/appointments/member?appointmentId=3&userId=2
+
+###
+DELETE http://localhost:8080/appointments/member?appointmentId=3&userId=2
+
+###
+POST http://localhost:8080/appointments/member/acceptInvitation/3

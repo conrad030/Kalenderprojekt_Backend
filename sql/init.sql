@@ -3,9 +3,9 @@ CREATE DATABASE SmartCalendar;
 CREATE TABLE SmartCalendar.Group (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
-  `createdAt` TIMESTAMP NOT NULL,
+  `createdAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `invitationCode` VARCHAR(5) NOT NULL,
-  `password` VARCHAR(45) NULL,
+  `password` VARCHAR(70) NULL,
   `colorCode` VARCHAR(6) NOT NULL,
   PRIMARY KEY (`id`)
 );
@@ -21,10 +21,10 @@ CREATE TABLE SmartCalendar.Group_Member (
 CREATE TABLE SmartCalendar.User (
   `id` INT NOT NULL AUTO_INCREMENT,
   `username` VARCHAR(45) NOT NULL,
-  `password` VARCHAR(45) NOT NULL,
-  `createdAt` TIMESTAMP NOT NULL,
+  `password` VARCHAR(70) NOT NULL,
+  `createdAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `email` VARCHAR(45) NOT NULL,
-  `isAdmin` TINYINT NOT NULL,
+  `isAdmin` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 );
 
@@ -111,9 +111,11 @@ ADD
 ALTER TABLE
   SmartCalendar.Appointment_Member
 ADD
-  FOREIGN KEY (userId) REFERENCES SmartCalendar.User(id),
+  FOREIGN KEY (userId) REFERENCES SmartCalendar.User(id)
+  ON DELETE CASCADE,
 ADD
-  FOREIGN KEY (appointmentId) REFERENCES SmartCalendar.Appointment(id);
+  FOREIGN KEY (appointmentId) REFERENCES SmartCalendar.Appointment(id)
+  ON DELETE CASCADE;
 
 ALTER TABLE
   SmartCalendar.Message
