@@ -12,7 +12,7 @@ function initDb(callback) {
   } else {
     let options = {
       port: process.env.DATABASE_PORT,
-      host: "localhost",
+      host: process.env.DATABASE_HOST,
       user: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
