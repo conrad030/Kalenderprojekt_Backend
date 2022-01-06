@@ -6,8 +6,7 @@ exports.signup = async function (req, res) {
     let newUser = await userService.createUser(username, email, password);
     res.status(201).json({ message: "user successfully created" });
   } catch (error) {
-    console.log(error);
-    res.status(404).json({ message: "bad input" });
+    res.status(error.statusCode).json({ message: error.message });
   }
 };
 
