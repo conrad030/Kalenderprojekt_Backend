@@ -111,9 +111,11 @@ ADD
 ALTER TABLE
   SmartCalendar.Appointment_Member
 ADD
-  FOREIGN KEY (userId) REFERENCES SmartCalendar.User(id),
+  FOREIGN KEY (userId) REFERENCES SmartCalendar.User(id)
+  ON DELETE CASCADE,
 ADD
-  FOREIGN KEY (appointmentId) REFERENCES SmartCalendar.Appointment(id);
+  FOREIGN KEY (appointmentId) REFERENCES SmartCalendar.Appointment(id)
+  ON DELETE CASCADE;
 
 ALTER TABLE
   SmartCalendar.Message
