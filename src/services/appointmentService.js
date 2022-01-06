@@ -3,21 +3,6 @@ const { ServiceError } = require("../errors");
 const userService = require("./userService");
 const groupService = require("./groupService");
 
-const findMembersForAppointment = async function (id) {
-  if (!id) throw new Error("missing arguments");
-  let query = `
-  SELECT SmartCalendar.User.id, username, email, SmartCalendar.User.isAdmin
-  FROM SmartCalendar.User user, SmartCalendar.Appointment_Member member
-  WHERE user.id = member.userId
-  AND member.appointmentId = ?;`;
-  try {
-    let [users, _] = await db.query(query, [id]);
-    return users;
-  } catch (error) {
-    throw new ServiceError("Internal server error", 500);
-  }
-};
-
 exports.createAppointment = async function (
   groupId,
   title,
@@ -64,7 +49,6 @@ exports.createAppointment = async function (
       );
       return newAppointment;
     } catch (error) {
-      console.log(error);
       throw new ServiceError("Internal Server Error", 500);
     }
   } else {
@@ -159,7 +143,6 @@ exports.deleteAppointment = async function (id) {
     await db.query(query, [id]);
     return appointment;
   } catch (error) {
-    console.log(error);
     throw new ServiceError("Internal Server Error", 500);
   }
 };
@@ -187,10 +170,10 @@ exports.addMember = async function (
 ) {
   if (!appointmentId || !userId)
     throw new ServiceError("Missing arguments in query", 400);
+  if (await this.findMemberForAppointment(userId, appointmentId))
+    throw new ServiceError("User is already member", 400);
   let appointment = await this.findOne(appointmentId);
   if (!appointment) throw new ServiceError("Appointment not found", 404);
-  let user = await userService.findOne(userId);
-  if (!user) throw new ServiceError("User not found", 404);
   let appointmentMemberQuery = `
     INSERT INTO SmartCalendar.Appointment_Member (userId, appointmentId, acceptedInvitation, hasReminder, isAdmin)
     VALUES (?, ?, ?, ?, ?);
@@ -209,4 +192,86 @@ exports.addMember = async function (
   } catch (error) {
     throw new ServiceError("Internal Server Error", 500);
   }
+};
+
+exports.removeMember = async function (appointmentId, userId) {
+  if (!appointmentId || !userId)
+    throw new ServiceError("Missing arguments in query", 400);
+  let member = await this.findMemberForAppointment(userId, appointmentId);
+  if (!member) {
+    throw new ServiceError("User is no member of appointment", 400);
+  } else if (member.isAdmin) {
+    throw new ServiceError("Appointment admin can't be removed", 400);
+  }
+  let query = `
+  DELETE FROM SmartCalendar.Appointment_Member
+  WHERE appointmentId = ?
+  AND userId = ?;
+  `;
+  try {
+    await db.query(query, [appointmentId, userId]);
+  } catch (error) {
+    throw new ServiceError("Internal Server Error", 500);
+  }
+};
+
+exports.acceptInvitation = async function (appointmentId, userId) {
+  let appointment = await this.findOne(appointmentId);
+  if (!appointment) throw new ServiceError("Appointment not found", 404);
+  let user = await userService.findOne(userId);
+  if (!user) throw new ServiceError("User not found", 404);
+  let member = await this.findMemberForAppointment(userId, appointmentId);
+  if (!member) {
+    throw new ServiceError("User is no member of appointment", 404);
+  } else if (member.acceptedInvitation) {
+    throw new ServiceError("User already accepted invitation", 400);
+  }
+
+  let query = `
+  UPDATE SmartCalendar.Appointment_Member SET 
+  acceptedInvitation = true
+  WHERE userId = ?
+  AND appointmentId = ?;
+  `;
+  try {
+    await db.query(query, [userId, appointmentId]);
+  } catch (error) {
+    throw new ServiceError("Internal Server Error", 500);
+  }
+};
+
+const findMembersForAppointment = async function (appointmentId) {
+  if (!appointmentId) throw new Error("missing arguments");
+  let query = `
+  SELECT user.id, user.username, user.email, member.isAdmin, member.acceptedInvitation
+  FROM SmartCalendar.User user, SmartCalendar.Appointment_Member member
+  WHERE user.id = member.userId
+  AND member.appointmentId = ?;`;
+  try {
+    let [users, _] = await db.query(query, [appointmentId]);
+    for (var i = 0; i < users.length; i++) {
+      users[i].acceptedInvitation = users[i].acceptedInvitation === 1;
+    }
+    return users;
+  } catch (error) {
+    console.log(error);
+    throw new ServiceError("Internal server error", 500);
+  }
+};
+
+exports.findMemberForAppointment = async function (userId, appointmentId) {
+  if (!appointmentId || !userId) throw new Error("Missing arguments");
+  let appointment = await this.findOne(appointmentId);
+  if (!appointment) throw new ServiceError("Appointment not found", 404);
+  let user = await userService.findOne(userId);
+  if (!user) throw new ServiceError("User not found", 404);
+  let query = `
+  SELECT * FROM SmartCalendar.Appointment_Member
+  WHERE userId = ?
+  AND appointmentId = ?;`;
+  let [members, _] = await db.query(query, [userId, appointmentId]);
+  //No members found
+  if (members.length === 0) return;
+  members[0].acceptedInvitation = members[0].acceptedInvitation === 1;
+  return members[0];
 };

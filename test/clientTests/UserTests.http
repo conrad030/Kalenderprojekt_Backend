@@ -11,6 +11,7 @@ Content-Type: application/json
 //dGVzdDphYmM= correct
 //dGVzdDp3cm9uZw== wrong password
 //d3Jvbmc6d3Jvbmc= wrong data
+//dGVzdDE6YWJj also correct
 POST http://localhost:8080/users/login
 Authorization: Bearer dGVzdDphYmM=
 

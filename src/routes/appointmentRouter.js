@@ -14,12 +14,38 @@ router.get("/groups/:id", middleware.checkAuthentication, controller.findAll);
 router.get("/:id", middleware.checkAuthentication, controller.findOne);
 
 // Update Appointment
-router.put("/:id", middleware.checkAuthentication, controller.update);
-
-// Delete Appointment
-router.delete("/:id", middleware.checkAuthentication, controller.delete);
+router.put(
+  "/:id",
+  middleware.checkAuthentication,
+  middleware.checkIfAppointmentAdmin,
+  controller.update
+);
 
 //Add Member to Appointment
-router.post("/member", middleware.checkAuthentication, controller.addMember);
+router.post(
+  "/member",
+  middleware.checkAuthentication,
+  middleware.checkIfAppointmentAdmin,
+  controller.addMember
+);
+
+//Remove Member from Appointment
+router.delete(
+  "/member",
+  middleware.checkAuthentication,
+  middleware.checkIfAppointmentAdmin,
+  controller.removeMember
+);
+
+//Accept appointment invitation
+router.post("/member/acceptInvitation/:id", controller.acceptInvitation);
+
+// Delete Appointment
+router.delete(
+  "/:id",
+  middleware.checkAuthentication,
+  middleware.checkIfAppointmentAdmin,
+  controller.delete
+);
 
 module.exports = router;
