@@ -1,6 +1,7 @@
 const db = require("../database/Database").initDb();
 const { ServiceError } = require("../errors");
 const userService = require("./userService");
+const groupService = require("./groupService");
 
 const findMembersForAppointment = async function (id) {
   if (!id) throw new Error("missing arguments");
@@ -29,6 +30,9 @@ exports.createAppointment = async function (
   maxOccurences,
   userId
 ) {
+  if (!(await groupService.findOne(groupId)))
+    throw new ServiceError("Group not found", 404);
+
   if (groupId && title && startDate && startTime && endTime && colorCode) {
     let argumentsArray = Array.from(arguments)
       .slice(0, Array.from(arguments).length - 1)
