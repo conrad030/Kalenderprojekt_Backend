@@ -10,7 +10,7 @@ function checkAuthentication(req, res, next) {
 }
 
 //Rename to checkIsAdmin
-function checkAuthorization(req, res, next) {
+function checkIfAdmin(req, res, next) {
   //If user is authorized
   if (req.session.isAdmin) {
     next();
@@ -38,6 +38,6 @@ async function checkIfAppointmentAdmin(req, res, next) {
 
 module.exports = {
   checkAuthentication,
-  checkAuthorization,
+  checkIfAdmin,
   checkIfAppointmentAdmin,
 };
