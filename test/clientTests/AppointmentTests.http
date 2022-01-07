@@ -19,7 +19,7 @@ GET http://localhost:8080/appointments/groups/1
 GET http://localhost:8080/appointments/2
 
 ###
-DELETE http://localhost:8080/appointments/3
+DELETE http://localhost:8080/appointments/1
 
 ###
 PUT http://localhost:8080/appointments/3
@@ -42,3 +42,12 @@ DELETE http://localhost:8080/appointments/member?appointmentId=3&userId=2
 
 ###
 POST http://localhost:8080/appointments/member/acceptInvitation/3
+
+###
+POST http://localhost:8080/appointments/createException
+Content-Type: application/json
+
+{
+  "appointmentId": "2",
+  "date": "abc"
+}

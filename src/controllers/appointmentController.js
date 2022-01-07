@@ -9,6 +9,7 @@ exports.create = async function (req, res) {
     startTime,
     endTime,
     colorCode,
+    parentId,
     description,
     repeatInterval,
     maxOccurences,
@@ -21,6 +22,7 @@ exports.create = async function (req, res) {
       startTime,
       endTime,
       colorCode,
+      parentId,
       description,
       repeatInterval,
       maxOccurences,
@@ -135,6 +137,20 @@ exports.acceptInvitation = async function (req, res) {
       req.session.userId
     );
     res.status(200).json({ message: "Accepted invitation" });
+  } catch (error) {
+    res.status(error.statusCode).json({ message: error.message });
+  }
+};
+
+exports.createException = async function (req, res) {
+  let { appointmentId, date } = req.body;
+  try {
+    let appointment = await appointmentService.createException(
+      appointmentId,
+      date,
+      req.session.userId
+    );
+    res.status(201).json(appointment);
   } catch (error) {
     res.status(error.statusCode).json({ message: error.message });
   }

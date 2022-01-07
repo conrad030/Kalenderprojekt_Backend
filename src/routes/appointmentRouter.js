@@ -40,6 +40,14 @@ router.delete(
 //Accept appointment invitation
 router.post("/member/acceptInvitation/:id", controller.acceptInvitation);
 
+//Create exception for appointment
+router.post(
+  "/createException",
+  middleware.checkAuthentication,
+  middleware.checkIfAppointmentAdmin,
+  controller.createException
+);
+
 // Delete Appointment
 router.delete(
   "/:id",

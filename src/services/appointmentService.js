@@ -10,6 +10,7 @@ exports.createAppointment = async function (
   startTime,
   endTime,
   colorCode,
+  parentId,
   description,
   repeatInterval,
   maxOccurences,
@@ -27,10 +28,10 @@ exports.createAppointment = async function (
 
     let appointmentQuery = `
     INSERT INTO SmartCalendar.Appointment (groupId, title, startDate, startTime, endTime, colorCode${
-      description ? ", description" : ""
-    }${repeatInterval ? ", repeatInterval" : ""}${
-      maxOccurences ? ", maxOccurences" : ""
-    })
+      parentId ? ", parentId" : ""
+    }${description ? ", description" : ""}${
+      repeatInterval ? ", repeatInterval" : ""
+    }${maxOccurences ? ", maxOccurences" : ""})
     VALUES (${argumentsArray
       .map((_) => {
         return "?";
@@ -47,6 +48,7 @@ exports.createAppointment = async function (
         true,
         true
       );
+      newAppointment.exceptions = [];
       return newAppointment;
     } catch (error) {
       throw new ServiceError("Internal Server Error", 500);
@@ -67,6 +69,8 @@ exports.getAppointmentsForGroup = async function (groupId) {
     for (var i = 0; i < appointments.length; i++) {
       let members = await findMembersForAppointment(appointments[i].id);
       appointments[i].members = members;
+      let exceptions = await findExceptionsForAppointment(appointments[i].id);
+      appointments[i].exceptions = exceptions;
     }
     return appointments;
   } catch (error) {
@@ -123,6 +127,8 @@ exports.updateAppointment = async function (
     let updatedAppointment = await this.findOne(id);
     let members = await findMembersForAppointment(updatedAppointment.id);
     updatedAppointment.members = members;
+    let exceptions = await findExceptionsForAppointment(updatedAppointment.id);
+    updatedAppointment.exceptions = exceptions;
     return updatedAppointment;
   } catch (error) {
     throw new ServiceError("Internal Server Error", 500);
@@ -157,6 +163,8 @@ exports.findOne = async function (id) {
   if (appointments.length === 0) return;
   let members = await findMembersForAppointment(id);
   appointments[0].members = members;
+  let exceptions = await findExceptionsForAppointment(id);
+  appointments[0].exceptions = exceptions;
   return appointments[0];
 };
 
@@ -188,6 +196,8 @@ exports.addMember = async function (
     ]);
     let members = await findMembersForAppointment(appointmentId);
     appointment.members = members;
+    let exceptions = await findExceptionsForAppointment(appointmentId);
+    appointment.exceptions = exceptions;
     return appointment;
   } catch (error) {
     throw new ServiceError("Internal Server Error", 500);
@@ -240,6 +250,25 @@ exports.acceptInvitation = async function (appointmentId, userId) {
   }
 };
 
+exports.createException = async function (appointmentId, date, userId) {
+  let appointment = await this.findOne(appointmentId);
+  if (!appointment) throw new ServiceError("Appointment not found", 404);
+  let query = `
+  INSERT INTO SmartCalendar.Appointment_Exception (appointmentId, date)
+  VALUES (?, ?);
+  `;
+  try {
+    let result = await db.query(query, [appointmentId, date]);
+    let members = await findMembersForAppointment(appointmentId);
+    appointment.members = members;
+    let exceptions = await findExceptionsForAppointment(appointmentId);
+    appointment.exceptions = exceptions;
+    return appointment;
+  } catch (error) {
+    throw new ServiceError("Internal Server Error", 500);
+  }
+};
+
 const findMembersForAppointment = async function (appointmentId) {
   if (!appointmentId) throw new Error("missing arguments");
   let query = `
@@ -251,10 +280,23 @@ const findMembersForAppointment = async function (appointmentId) {
     let [users, _] = await db.query(query, [appointmentId]);
     for (var i = 0; i < users.length; i++) {
       users[i].acceptedInvitation = users[i].acceptedInvitation === 1;
+      users[i].isAdmin = users[i].isAdmin === 1;
     }
     return users;
   } catch (error) {
-    console.log(error);
+    throw new ServiceError("Internal server error", 500);
+  }
+};
+
+const findExceptionsForAppointment = async function (appointmentId) {
+  if (!appointmentId) throw new Error("missing arguments");
+  let query = `
+  SELECT date FROM SmartCalendar.Appointment_Exception
+  WHERE appointmentId = ?;`;
+  try {
+    let [exceptions, _] = await db.query(query, [appointmentId]);
+    return exceptions;
+  } catch (error) {
     throw new ServiceError("Internal server error", 500);
   }
 };
@@ -273,5 +315,6 @@ exports.findMemberForAppointment = async function (userId, appointmentId) {
   //No members found
   if (members.length === 0) return;
   members[0].acceptedInvitation = members[0].acceptedInvitation === 1;
+  members[0].isAdmin = members[0].isAdmin === 1;
   return members[0];
 };
