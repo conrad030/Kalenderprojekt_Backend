@@ -94,19 +94,23 @@ CREATE TABLE SmartCalendar.Message (
 ALTER TABLE
   SmartCalendar.Appointment
 ADD
-  FOREIGN KEY (groupId) REFERENCES SmartCalendar.Group(id),
+  FOREIGN KEY (groupId) REFERENCES SmartCalendar.Group(id)
+  ON DELETE CASCADE,
 ADD
-  FOREIGN KEY (parentId) REFERENCES SmartCalendar.Appointment(id);
+  FOREIGN KEY (parentId) REFERENCES SmartCalendar.Appointment(id)
+  ON DELETE CASCADE;
 
 ALTER TABLE
   SmartCalendar.Appointment_Exception
 ADD
-  FOREIGN KEY (appointmentId) REFERENCES SmartCalendar.Appointment(id);
+  FOREIGN KEY (appointmentId) REFERENCES SmartCalendar.Appointment(id)
+  ON DELETE CASCADE;
 
 ALTER TABLE
   SmartCalendar.Appointment_File
 ADD
-  FOREIGN KEY (appointmentId) REFERENCES SmartCalendar.Appointment(id);
+  FOREIGN KEY (appointmentId) REFERENCES SmartCalendar.Appointment(id)
+  ON DELETE CASCADE;
 
 ALTER TABLE
   SmartCalendar.Appointment_Member
@@ -120,23 +124,29 @@ ADD
 ALTER TABLE
   SmartCalendar.Message
 ADD
-  FOREIGN KEY (userId) REFERENCES SmartCalendar.User(id);
+  FOREIGN KEY (userId) REFERENCES SmartCalendar.User(id)
+  ON DELETE CASCADE;
 
 ALTER TABLE
   SmartCalendar.User_Team
 ADD
-  FOREIGN KEY (teamId) REFERENCES SmartCalendar.Team(id),
+  FOREIGN KEY (teamId) REFERENCES SmartCalendar.Team(id)
+  ON DELETE CASCADE,
 ADD
-  FOREIGN KEY (userId) REFERENCES SmartCalendar.User(id);
+  FOREIGN KEY (userId) REFERENCES SmartCalendar.User(id)
+  ON DELETE CASCADE;
 
 ALTER TABLE
   SmartCalendar.Team
 ADD
-  FOREIGN KEY (groupId) REFERENCES SmartCalendar.Group(id);
+  FOREIGN KEY (groupId) REFERENCES SmartCalendar.Group(id)
+  ON DELETE CASCADE;
 
 ALTER TABLE
   SmartCalendar.Group_Member
 ADD
-  FOREIGN KEY (groupId) REFERENCES SmartCalendar.Group(id),
+  FOREIGN KEY (groupId) REFERENCES SmartCalendar.Group(id)
+  ON DELETE CASCADE,
 ADD
-  FOREIGN KEY (userId) REFERENCES SmartCalendar.User(id);
+  FOREIGN KEY (userId) REFERENCES SmartCalendar.User(id)
+  ON DELETE CASCADE;
