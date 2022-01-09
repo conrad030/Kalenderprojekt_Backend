@@ -22,6 +22,7 @@ Content-Type: application/json
 ###
 
 GET http://localhost:8000/groups/invitation/IG5qD
+Content-Type: application/json
 
 ###
 
@@ -37,5 +38,5 @@ Content-Type: application/json
 ###
 
 # Delete group
-DELETE http://localhost:8000/groups/18
+DELETE http://localhost:8000/groups/16
 Content-Type: application/json

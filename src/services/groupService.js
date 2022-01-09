@@ -78,12 +78,16 @@ exports.delete = async function (id) {
 // TODO: How to detect User that is being added? A param?
 // TODO: Auto-join user to group on create
 
-exports.joinGroup = async function (invCode, user) {
-  if (!invCode || !user) throw new Error("Invalid data");
+exports.joinGroup = async function (invCode, userId) {
+  if (!invCode || !userId) throw new Error("Invalid data");
+  let checkQuery = `SELECT * FROM SmartCalendar.Group WHERE userId = ?`;
+  let [member, memberFields] = await db.query(checkQuery, [userId]);
+  if (member) throw new Error("User already exists");
   let groupQuery = `SELECT * FROM SmartCalendar.Group 
   WHERE invitationCode = ?`;
-  let [group, fields] = await db.query(query, [invCode]);
+  let [group, fields] = await db.query(groupQuery, [invCode]);
+
   let query = `INSERT INTO SmartCalendar.Group_Member (groupId, userId, isAdmin)
   VALUES (?, ?, ?)`;
-  await db.query(query, [group[0].id, user.id, user.isAdmin]);
+  await db.query(query, [group[0].id, userId, false]);
 };

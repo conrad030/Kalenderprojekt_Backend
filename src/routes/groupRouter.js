@@ -24,7 +24,7 @@ router.get(
 
 // Get invitation code
 router.get(
-  "/invitation/:code",
+  "/invitation/:invCode",
   middleware.checkAuthentication,
   controller.joinGroup
 );
