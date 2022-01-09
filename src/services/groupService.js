@@ -2,7 +2,7 @@ const { log } = require("console");
 const db = require("../database/Database").initDb();
 const { ServiceError } = require("../errors");
 
-function genInvCode(length) {
+async function genInvCode(length) {
   var result = "";
   var characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -10,17 +10,19 @@ function genInvCode(length) {
   for (var i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
+  let invCodeQuery = `SELECT * FROM SmartCalendar.Group WHERE invitationCode = ?`;
+  let [invCodeResult, fields] = await db.query(invCodeQuery, [result]);
+  if (!invCodeResult.length == 0) genInvCode(length);
+
   return result;
 }
 
+//   TODO: Generate invite code
+// TODO: Create admin group member
 exports.create = async function (name, password) {
   if (!name || !password) throw new ServiceError("Invalid data", 400);
-  // Group name existance check left out
+  let invCode = await genInvCode(5);
 
-  //   TODO: Generate invite code
-  // TODO: Create admin group member
-  let invCode = genInvCode(5);
-  // QUERY
   let insertQuery = `
   INSERT INTO SmartCalendar.Group (name, password, invitationCode, colorCode) VALUES (?, ?, ?, 'FFFFFF');`;
   let findQuery = `SELECT * FROM SmartCalendar.Group WHERE id = ?;`;

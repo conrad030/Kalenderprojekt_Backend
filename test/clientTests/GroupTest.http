@@ -3,7 +3,7 @@ POST http://localhost:8000/groups/create
 Content-Type: application/json
 
 {
-  "name": "Very New Group",
+  "name": "Very New Group 2",
   "password": "passwort"
 }
 
