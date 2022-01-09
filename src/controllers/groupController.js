@@ -2,8 +2,9 @@ const groupService = require("../services/groupService");
 
 exports.create = async (req, res) => {
   let { name, password } = req.body;
+  let id = req.session.userId;
   try {
-    let newGroup = await groupService.create(name, password);
+    let newGroup = await groupService.create(name, password, id);
     res.status(201).json(newGroup);
   } catch (error) {
     res.status(error.statusCode).json({ message: error.message });

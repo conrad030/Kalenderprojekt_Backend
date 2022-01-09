@@ -23,6 +23,9 @@ router.get(
 );
 
 // Get invitation code
+/**
+ * ? Should this be a POST instead?
+ */
 router.get(
   "/invitation/:invCode",
   middleware.checkAuthentication,
