@@ -2,6 +2,11 @@ const { log } = require("console");
 const db = require("../database/Database").initDb();
 const { ServiceError } = require("../errors");
 
+/**
+ * Generate a 5 char long invite code
+ * @param {string} length
+ * @returns invite code
+ */
 async function genInvCode(length) {
   var result = "";
   var characters =
@@ -17,21 +22,36 @@ async function genInvCode(length) {
   return result;
 }
 
-//   TODO: Generate invite code
-// TODO: Create admin group member
-exports.create = async function (name, password) {
+/**
+ * Create new group and add current user as its admin
+ * @param {string} name
+ * @param {string} password
+ * @param {number} userId
+ * @returns json - created group
+ */
+exports.create = async function (name, password, userId) {
   if (!name || !password) throw new ServiceError("Invalid data", 400);
   let invCode = await genInvCode(5);
+  // let currentUser = userService.findById(userId)
 
-  let insertQuery = `
+  let groupInsertQuery = `
   INSERT INTO SmartCalendar.Group (name, password, invitationCode, colorCode) VALUES (?, ?, ?, 'FFFFFF');`;
-  let findQuery = `SELECT * FROM SmartCalendar.Group WHERE id = ?;`;
+  let adminInsertQuery = `INSERT INTO SmartCalendar.Group_Member (groupId, userId, isAdmin) VALUES (?, ?, ?)`;
 
-  let results = await db.query(insertQuery, [name, password, invCode]);
+  // Create and find new group
+  let results = await db.query(groupInsertQuery, [name, password, invCode]);
   let newGroup = await this.findOne(results[0].insertId);
+
+  // Add user to new group and make them admin
+  await db.query(adminInsertQuery, [newGroup.id, userId, true]);
+
   return newGroup;
 };
 
+/**
+ * Get all groups
+ * @returns Array - All groups
+ */
 exports.findAll = async function () {
   let query = `SELECT * FROM SmartCalendar.Group`;
   let [groups, fields] = await db.query(query);
@@ -39,6 +59,11 @@ exports.findAll = async function () {
   return groups;
 };
 
+/**
+ * Get single group
+ * @param {numer} id
+ * @returns group
+ */
 exports.findOne = async function (id) {
   if (!id) throw new ServiceError("Invalid data", 400);
   let query = `SELECT * FROM SmartCalendar.Group
@@ -50,6 +75,13 @@ exports.findOne = async function (id) {
   return groups[0];
 };
 
+/**
+ * Update one group
+ * @param {number} id
+ * @param {string} name
+ * @param {string} password
+ * @returns group
+ */
 exports.update = async function (id, name, password) {
   if (!id || !name || !password) throw new ServiceError("Invalid data", 400);
   var group = await this.findOne(id);
@@ -65,7 +97,11 @@ exports.update = async function (id, name, password) {
   return group;
 };
 
-// TODO: Cascade delete group_members and appointments a la Appointment_Member On Cascade in init.sql
+/**
+ * Delete group
+ * @param {number} id
+ * @returns deleted group
+ */
 exports.delete = async function (id) {
   if (!id) throw new ServiceError("Invalid data", 400);
   var group = await this.findOne(id);
@@ -77,9 +113,12 @@ exports.delete = async function (id) {
   return group;
 };
 
-// TODO: How to detect User that is being added? A param?
-// TODO: Auto-join user to group on create
-
+/**
+ * Add current user to the group with given invite code
+ * * The added user will always have isAdmin set to false
+ * @param {string} invCode
+ * @param {number} userId
+ */
 exports.joinGroup = async function (invCode, userId) {
   if (!invCode || !userId) throw new ServiceError("Invalid data", 400);
   let checkQuery = `SELECT * FROM SmartCalendar.Group_Member WHERE userId = ?`;
