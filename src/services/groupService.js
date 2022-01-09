@@ -1,15 +1,25 @@
 const { log } = require("console");
-const { toUnicode } = require("punycode");
 
 const db = require("../database/Database").initDb();
+
+function genInvCode(length) {
+  var result = "";
+  var characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
 
 exports.create = async function (name, password) {
   if (!name || !password) throw new Error("Invalid data");
   // Group name existance check left out
 
-  // TODO: Generate invite code
-  // TODO: Create GroupMember when group is created and make them admin
-  let invCode = "asdfg";
+  //   TODO: Generate invite code
+  // TODO: Create admin group member
+  let invCode = genInvCode(5);
   // QUERY
   let insertQuery = `
   INSERT INTO SmartCalendar.Group (name, password, invitationCode, colorCode) VALUES (?, ?, ?, 'FFFFFF');`;
@@ -40,6 +50,7 @@ exports.findOne = async function (id) {
 
 exports.update = async function (id, name, password) {
   if (!id || !name || !password) throw new Error("missing arguments");
+  var group = await this.findOne(id);
 
   if (!group) throw new Error("Not found");
   let query = `UPDATE SmartCalendar.Group SET 
@@ -48,11 +59,11 @@ exports.update = async function (id, name, password) {
   WHERE id = ?;`;
 
   await db.query(query, [name, password, id]);
-  var group = await this.findOne(id);
 
   return group;
 };
 
+// TODO: Cascade delete group_members and appointments a la Appointment_Member On Cascade in init.sql
 exports.delete = async function (id) {
   if (!id) throw new Error("Invalid data");
   var group = await this.findOne(id);
@@ -65,11 +76,10 @@ exports.delete = async function (id) {
 };
 
 // TODO: How to detect User that is being added? A param?
-// TODO: clear up isAdmin
 // TODO: Auto-join user to group on create
 
 exports.joinGroup = async function (invCode, user) {
-  if (!invCode) throw new Error("Invalid data");
+  if (!invCode || !user) throw new Error("Invalid data");
   let groupQuery = `SELECT * FROM SmartCalendar.Group 
   WHERE invitationCode = ?`;
   let [group, fields] = await db.query(query, [invCode]);
