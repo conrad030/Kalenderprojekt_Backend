@@ -1,6 +1,6 @@
 const { log } = require("console");
-
 const db = require("../database/Database").initDb();
+const { ServiceError } = require("../errors");
 
 function genInvCode(length) {
   var result = "";
@@ -14,7 +14,7 @@ function genInvCode(length) {
 }
 
 exports.create = async function (name, password) {
-  if (!name || !password) throw new Error("Invalid data");
+  if (!name || !password) throw new ServiceError("Invalid data", 400);
   // Group name existance check left out
 
   //   TODO: Generate invite code
@@ -38,21 +38,21 @@ exports.findAll = async function () {
 };
 
 exports.findOne = async function (id) {
-  if (!id) throw new Error("missing arguments");
+  if (!id) throw new ServiceError("Invalid data", 400);
   let query = `SELECT * FROM SmartCalendar.Group
     WHERE id = ?;`;
 
   let [groups, fields] = await db.query(query, [id]);
   //No groups found
-  if (groups.length === 0) return;
+  if (groups.length === 0) throw new ServiceError("Not found", 404);
   return groups[0];
 };
 
 exports.update = async function (id, name, password) {
-  if (!id || !name || !password) throw new Error("missing arguments");
+  if (!id || !name || !password) throw new ServiceError("Invalid data", 400);
   var group = await this.findOne(id);
 
-  if (!group) throw new Error("Not found");
+  if (!group) throw new ServiceError("Not found", 404);
   let query = `UPDATE SmartCalendar.Group SET 
   name = ?,
   password = ?
@@ -65,10 +65,10 @@ exports.update = async function (id, name, password) {
 
 // TODO: Cascade delete group_members and appointments a la Appointment_Member On Cascade in init.sql
 exports.delete = async function (id) {
-  if (!id) throw new Error("Invalid data");
+  if (!id) throw new ServiceError("Invalid data", 400);
   var group = await this.findOne(id);
 
-  if (!group) throw new Error("Not found");
+  if (!group) throw new ServiceError("Not found", 400);
   let deleteQuery = `DELETE from SmartCalendar.Group WHERE id = ?`;
 
   await db.query(deleteQuery, [id]);
@@ -79,10 +79,11 @@ exports.delete = async function (id) {
 // TODO: Auto-join user to group on create
 
 exports.joinGroup = async function (invCode, userId) {
-  if (!invCode || !userId) throw new Error("Invalid data");
-  let checkQuery = `SELECT * FROM SmartCalendar.Group WHERE userId = ?`;
+  if (!invCode || !userId) throw new ServiceError("Invalid data", 400);
+  let checkQuery = `SELECT * FROM SmartCalendar.Group_Member WHERE userId = ?`;
   let [member, memberFields] = await db.query(checkQuery, [userId]);
-  if (member) throw new Error("User already exists");
+  if (!member.length == 0) throw new ServiceError("User already exists", 400);
+
   let groupQuery = `SELECT * FROM SmartCalendar.Group 
   WHERE invitationCode = ?`;
   let [group, fields] = await db.query(groupQuery, [invCode]);

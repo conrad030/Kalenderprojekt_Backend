@@ -7,7 +7,7 @@ exports.create = async (req, res) => {
     res.status(201).json({ message: "created team" });
   } catch (error) {
     console.error(error.message);
-    res.status(404).json({ message: error.message });
+    res.status(error.statusCode).json({ message: error.message });
   }
 };
 
@@ -20,7 +20,7 @@ exports.addMember = async (req, res) => {
     res.status(201).json({ message: "added user to team" });
   } catch (error) {
     console.error(error.message);
-    res.status(404).json({ message: error.message });
+    res.status(error.statusCode).json({ message: error.message });
   }
 };
 
@@ -29,7 +29,8 @@ exports.findAll = async (req, res) => {
     let allTeams = await teamService.findAll();
     res.status(200).json(allTeams);
   } catch (error) {
-    res.status(404).json({ message: error.message });
+    console.log(error.message);
+    res.status(error.statusCode).json({ message: error.message });
   }
 };
 
@@ -40,7 +41,7 @@ exports.findOne = async (req, res) => {
     res.status(200).json(team);
   } catch (error) {
     console.error(error.message);
-    res.status(404).json({ message: "bad input" });
+    res.status(error.statusCode).json({ message: error.message });
   }
 };
 
@@ -52,7 +53,7 @@ exports.update = async (req, res) => {
     res.status(200).json(team);
   } catch (error) {
     console.error(error.message);
-    res.status(404).json({ message: error.message });
+    res.status(error.statusCode).json({ message: error.message });
   }
 };
 
@@ -63,8 +64,6 @@ exports.delete = async (req, res) => {
     res.status(200).json({ message: "deleted team" });
   } catch (error) {
     console.error(error.message);
-    res.status(404).json({
-      message: error.message,
-    });
+    res.status(404).json({ message: error.message });
   }
 };

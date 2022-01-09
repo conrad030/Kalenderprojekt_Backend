@@ -6,8 +6,7 @@ exports.create = async (req, res) => {
     let newGroup = await groupService.create(name, password);
     res.status(201).json(newGroup);
   } catch (error) {
-    console.error(error.message);
-    res.status(400).json({ message: "bad input" });
+    res.status(error.statusCode).json({ message: error.message });
   }
 };
 
@@ -16,8 +15,7 @@ exports.findAll = async (req, res) => {
     let allGroups = await groupService.findAll();
     res.status(200).json(allGroups);
   } catch (error) {
-    console.error(error.message);
-    res.status(403).json({ message: error.message });
+    res.status(error.statusCode).json({ message: error.message });
   }
 };
 
@@ -27,8 +25,7 @@ exports.findOne = async (req, res) => {
     let group = await groupService.findOne(id);
     res.status(200).json(group);
   } catch (error) {
-    console.error(error.message);
-    res.status(404).json({ message: "bad input" });
+    res.status(error.statusCode).json({ message: error.message });
   }
 };
 
@@ -40,7 +37,7 @@ exports.joinGroup = async (req, res) => {
     res.status(200).json({ message: "User joined Group" });
   } catch (error) {
     console.error(error.message);
-    res.status(404).json({ message: error.message });
+    res.status(error.statusCode).json({ message: error.message });
   }
 };
 
@@ -52,7 +49,7 @@ exports.update = async (req, res) => {
     res.status(200).json(group);
   } catch (error) {
     console.error(error.message);
-    res.status(404).json({ message: error.message });
+    res.status(error.statusCode).json({ message: error.message });
   }
 };
 
@@ -63,8 +60,6 @@ exports.delete = async (req, res) => {
     res.status(200).json(deletedGroup);
   } catch (error) {
     console.error(error.message);
-    res.status(404).json({
-      message: error.message,
-    });
+    res.status(error.statusCode).json({ message: error.message });
   }
 };

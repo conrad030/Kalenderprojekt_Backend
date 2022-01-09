@@ -16,11 +16,11 @@ Content-Type: application/json
 ###
 
 # Get specific group
-GET http://localhost:8000/groups/19
+GET http://localhost:8000/groups/10
 Content-Type: application/json
 
 ###
-
+# Invite and add user to group
 GET http://localhost:8000/groups/invitation/IG5qD
 Content-Type: application/json
 

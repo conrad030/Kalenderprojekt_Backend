@@ -1,7 +1,9 @@
 const db = require("../database/Database").initDb();
+const { ServiceError } = require("../errors");
 
 exports.createTeam = async function (groupId, name, colorCode) {
-  if (!groupId || !name || !colorCode) throw new Error("Invalid data");
+  if (!groupId || !name || !colorCode)
+    throw new ServiceError("Invalid data", 400);
   let query = `INSERT INTO SmartCalendar.Team (groupId, name, colorCode) 
     VALUES (?, ?, ?);
 `;
@@ -9,9 +11,9 @@ exports.createTeam = async function (groupId, name, colorCode) {
 };
 
 exports.addMember = async function (teamId, userId) {
-  if (!userId || !teamId) throw new Error("missing arguments");
+  if (!userId || !teamId) throw new ServiceError("Invalid data", 400);
   var team = this.findOne(teamId);
-  if (!team) throw new Error("Not found");
+  if (!team) throw new ServiceError("Not found", 404);
 
   let insertQuery = `INSERT INTO SmartCalendar.User_Team (teamId, userId)
   VALUES (?, ?)`;
@@ -28,7 +30,7 @@ exports.findAll = async function () {
 };
 
 exports.findOne = async function (id) {
-  if (!id) throw new Error("missing arguments");
+  if (!id) throw new ServiceError("Invalid data", 400);
   let query = `SELECT * FROM SmartCalendar.Team
     WHERE id = ? ;
 `;
@@ -39,9 +41,9 @@ exports.findOne = async function (id) {
 };
 
 exports.update = async function (id, name, colorCode) {
-  if (!id || !name || !colorCode) throw new Error("missing arguments");
+  if (!id || !name || !colorCode) throw new ServiceError("Invalid data", 400);
   var team = this.findOne(id);
-  if (!team) throw new Error("Not found");
+  if (!team) throw new ServiceError("Not found", 404);
 
   let query = `UPDATE SmartCalendar.Team SET 
   name = ?,
@@ -55,9 +57,9 @@ exports.update = async function (id, name, colorCode) {
 };
 
 exports.delete = async function (id) {
-  if (!id) throw new Error("Invalid data");
+  if (!id) throw new ServiceError("Invalid data", 400);
   var team = await this.findOne(id);
-  if (!team) throw new Error("Not found");
+  if (!team) throw new ServiceError("Not found", 404);
 
   let query = `DELETE from SmartCalendar.Team WHERE id = ?`;
 
