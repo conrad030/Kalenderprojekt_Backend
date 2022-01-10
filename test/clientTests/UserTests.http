@@ -17,3 +17,5 @@ Authorization: Bearer dGVzdDphYmM=
 
 ###
 POST http://localhost:8080/users/logout
+
+# https://smartcalendarapi.herokuapp.com/
