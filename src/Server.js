@@ -59,11 +59,11 @@ app.use("/groups", groupRouter);
 app.use("/users", userRouter);
 
 // Connect
-var corsOptions = {
-  origin: `http://localhost:${process.env.PORT}`,
-};
+// var corsOptions = {
+//   origin: `http://localhost:${process.env.PORT}`,
+// };
 
-app.use(cors(corsOptions));
+app.use(cors());
 
 const port = process.env.PORT;
 app.listen(port, () => {
