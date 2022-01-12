@@ -1,6 +1,6 @@
 const appointmentService = require("../services/appointmentService");
+const groupService = require("../services/groupService");
 
-//Nur Gruppenmitglied
 exports.create = async function (req, res) {
   let {
     groupId,
@@ -15,6 +15,8 @@ exports.create = async function (req, res) {
     maxOccurences,
   } = req.body;
   try {
+    if (!(await groupService.isGroupMember(req.session.userId, groupId)))
+      return res.status(403).json({ message: "User is no member of group" });
     let newAppointment = await appointmentService.createAppointment(
       groupId,
       title,
@@ -34,8 +36,9 @@ exports.create = async function (req, res) {
   }
 };
 
-//Nur Gruppenmitglied
 exports.findAll = async function (req, res) {
+  if (!(await groupService.isGroupMember(req.session.userId, req.params.id)))
+    return res.status(403).json({ message: "User is no member of group" });
   try {
     let appointments = await appointmentService.getAppointmentsForGroup(
       req.params.id
@@ -46,11 +49,17 @@ exports.findAll = async function (req, res) {
   }
 };
 
-//Nur Gruppenmitglied
 exports.findOne = async function (req, res) {
   try {
     let appointment = await appointmentService.findOne(req.params.id);
     if (appointment !== undefined) {
+      if (
+        !(await groupService.isGroupMember(
+          req.session.userId,
+          appointment.groupId
+        ))
+      )
+        return res.status(403).json({ message: "User is no member of group" });
       res.status(200).json(appointment);
     } else {
       res.status(404).json({ message: "Appointment not found" });
@@ -72,12 +81,6 @@ exports.update = async function (req, res) {
       repeatInterval,
       maxOccurences,
     } = req.body;
-    let member = await appointmentService.findMemberForAppointment(
-      req.session.userId,
-      req.params.id
-    );
-    if (!member.isAdmin)
-      return res.status(403).json({ message: "Not authorized" });
     let updatedAppointment = await appointmentService.updateAppointment(
       title,
       startDate,

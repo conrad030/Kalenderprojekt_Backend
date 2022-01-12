@@ -16,10 +16,10 @@ Content-Type: application/json
 GET http://localhost:8080/appointments/groups/1
 
 ###
-GET http://localhost:8080/appointments/2
+GET http://localhost:8080/appointments/3
 
 ###
-DELETE http://localhost:8080/appointments/1
+DELETE http://localhost:8080/appointments/3
 
 ###
 PUT http://localhost:8080/appointments/3
@@ -48,6 +48,6 @@ POST http://localhost:8080/appointments/createException
 Content-Type: application/json
 
 {
-  "appointmentId": "2",
-  "date": "abc"
+  "appointmentId": "3",
+  "date": "2021-12-15"
 }
