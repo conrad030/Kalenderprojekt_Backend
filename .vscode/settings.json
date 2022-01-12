@@ -7,11 +7,11 @@
       "previewLimit": 50,
       "server": "localhost",
       "port": 3306,
-      "askForPassword": true,
       "driver": "MySQL",
-      "username": "root",
-      "name": "testSQL",
-      "database": "smartCalendar"
+      "name": "SmartCalendar",
+      "username": "doadmin",
+      "password": "GSgTWtbrWclWrK4S",
+      "database": "SmartCalendar"
     }
   ]
 }

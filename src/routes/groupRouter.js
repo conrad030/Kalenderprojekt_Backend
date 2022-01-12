@@ -23,8 +23,11 @@ router.get(
 );
 
 // Get invitation code
+/**
+ * ? Should this be a POST instead?
+ */
 router.get(
-  "/invitation/:code",
+  "/invitation/:invCode",
   middleware.checkAuthentication,
   controller.joinGroup
 );

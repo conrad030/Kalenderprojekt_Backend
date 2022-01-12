@@ -61,9 +61,16 @@ app.use("/users", userRouter);
 // Connect
 var corsOptions = {
   origin: `http://localhost:${process.env.PORT}`,
+  allowedHeaders: ["authorization", "content-type"],
+  exposedHeaders: ["authorization", "content-type"],
 };
 
 app.use(cors(corsOptions));
+app.use("/*", function (req, res, next) {
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.setHeader("Access-Control-Allow-Header", "Content-Type");
+  next();
+});
 
 const port = process.env.PORT;
 app.listen(port, () => {
