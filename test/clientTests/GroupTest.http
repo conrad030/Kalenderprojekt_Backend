@@ -1,10 +1,10 @@
 # Create group
-POST http://localhost:8080/groups/create
+POST http://localhost:8000/groups/create
 Content-Type: application/json
 
 {
-  "name": "NewGroup",
-  "password": "geheimesPasswort"
+  "name": "Very New Group 2",
+  "password": "passwort"
 }
 
 ###
@@ -16,7 +16,12 @@ Content-Type: application/json
 ###
 
 # Get specific group
-GET http://localhost:8000/groups/19
+GET http://localhost:8000/groups/10
+Content-Type: application/json
+
+###
+# Invite and add user to group
+GET http://localhost:8000/groups/invitation/IG5qD
 Content-Type: application/json
 
 ###
@@ -33,5 +38,5 @@ Content-Type: application/json
 ###
 
 # Delete group
-DELETE http://localhost:8000/groups/18
+DELETE http://localhost:8000/groups/16
 Content-Type: application/json

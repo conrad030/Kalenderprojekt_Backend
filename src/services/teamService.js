@@ -1,17 +1,34 @@
 const db = require("../database/Database").initDb();
+const { ServiceError } = require("../errors");
 
+/**
+ * Create a team
+ * @param {number} groupId
+ * @param {string} name
+ * @param {string} colorCode
+ * @returns created Team
+ */
 exports.createTeam = async function (groupId, name, colorCode) {
-  if (!groupId || !name || !colorCode) throw new Error("Invalid data");
+  if (!groupId || !name || !colorCode)
+    throw new ServiceError("Invalid data", 400);
   let query = `INSERT INTO SmartCalendar.Team (groupId, name, colorCode) 
     VALUES (?, ?, ?);
 `;
-  await db.query(query, [groupId, name, colorCode]);
+
+  let results = await db.query(query, [groupId, name, colorCode]);
+  let newTeam = await this.findOne(results[0].insertId);
+  return newTeam;
 };
 
+/**
+ * Add a user to a team
+ * @param {number} teamId
+ * @param {number} userId
+ */
 exports.addMember = async function (teamId, userId) {
-  if (!userId || !teamId) throw new Error("missing arguments");
+  if (!userId || !teamId) throw new ServiceError("Invalid data", 400);
   var team = this.findOne(teamId);
-  if (!team) throw new Error("Not found");
+  if (!team) throw new ServiceError("Not found", 404);
 
   let insertQuery = `INSERT INTO SmartCalendar.User_Team (teamId, userId)
   VALUES (?, ?)`;
@@ -21,14 +38,23 @@ exports.addMember = async function (teamId, userId) {
   await db.query(findQuery, [results[0].insertId]);
 };
 
+/**
+ *
+ * @returns Array - all teams
+ */
 exports.findAll = async function () {
   let query = `SELECT * FROM SmartCalendar.Team`;
   let [allTeams, fields] = await db.query(query);
   return allTeams;
 };
 
+/**
+ * Get one team
+ * @param {number} id
+ * @returns team
+ */
 exports.findOne = async function (id) {
-  if (!id) throw new Error("missing arguments");
+  if (!id) throw new ServiceError("Invalid data", 400);
   let query = `SELECT * FROM SmartCalendar.Team
     WHERE id = ? ;
 `;
@@ -38,10 +64,17 @@ exports.findOne = async function (id) {
   return teams[0];
 };
 
+/**
+ * Update one teams information
+ * @param {number} id
+ * @param {string} name
+ * @param {string} colorCode
+ * @returns updated team
+ */
 exports.update = async function (id, name, colorCode) {
-  if (!id || !name || !colorCode) throw new Error("missing arguments");
+  if (!id || !name || !colorCode) throw new ServiceError("Invalid data", 400);
   var team = this.findOne(id);
-  if (!team) throw new Error("Not found");
+  if (!team) throw new ServiceError("Not found", 404);
 
   let query = `UPDATE SmartCalendar.Team SET 
   name = ?,
@@ -54,12 +87,18 @@ exports.update = async function (id, name, colorCode) {
   return updatedTeam;
 };
 
+/**
+ * Delete one team
+ * @param {number} id
+ * @returns deleted team
+ */
 exports.delete = async function (id) {
-  if (!id) throw new Error("Invalid data");
+  if (!id) throw new ServiceError("Invalid data", 400);
   var team = await this.findOne(id);
-  if (!team) throw new Error("Not found");
 
-  let query = `DELETE from SmartCalendar.Team WHERE id = ?`;
+  if (!team) throw new ServiceError("Not found", 400);
+  let deleteQuery = `DELETE from SmartCalendar.Team WHERE id = ?`;
 
-  await db.query(query, [id]);
+  await db.query(deleteQuery, [id]);
+  return team;
 };

@@ -56,12 +56,22 @@ exports.findOne = async function (id) {
   return users[0];
 };
 
-async function findByEmail(email) {
+exports.findByEmail = async function (email) {
   let query = `SELECT * FROM SmartCalendar.User 
-    WHERE email=\'${email}\'`;
+    WHERE email= ? `;
 
-  let [users, fields] = await db.query(query);
+  let [users, fields] = await db.query(query, [email]);
   //No user found
   if (users.length == 0) return;
   return users[0];
-}
+};
+
+exports.findById = async function (id) {
+  let query = `SELECT * FROM SmartCalendar.User 
+    WHERE id = ? `;
+
+  let [users, fields] = await db.query(query, [id]);
+  //No user found
+  if (users.length == 0) return;
+  return users[0];
+};
