@@ -8,6 +8,19 @@ var session = require("express-session");
 var MySQLStore = require("express-mysql-session")(session);
 
 app.use(express.json());
+app.use(
+  cors({
+    exposedHeaders: ["Authorization"],
+  })
+);
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
 
 // MYSQL
 const db = require("./database/Database");
@@ -57,20 +70,6 @@ app.use("/teams", teamRouter);
 app.use("/appointments", appointmentRouter);
 app.use("/groups", groupRouter);
 app.use("/users", userRouter);
-
-// Connect
-var corsOptions = {
-  origin: `http://localhost:${process.env.PORT}`,
-  allowedHeaders: ["authorization", "content-type"],
-  exposedHeaders: ["authorization", "content-type"],
-};
-
-app.use(cors(corsOptions));
-app.use("/*", function (req, res, next) {
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
-  res.setHeader("Access-Control-Allow-Header", "Content-Type");
-  next();
-});
 
 const port = process.env.PORT;
 app.listen(port, () => {

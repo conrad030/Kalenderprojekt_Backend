@@ -11,9 +11,11 @@ Content-Type: application/json
 //dGVzdDphYmM= correct
 //dGVzdDp3cm9uZw== wrong password
 //d3Jvbmc6d3Jvbmc= wrong data
-POST http://localhost:8000/users/login
-Authorization: Bearer eWFrdXA6YWJj
+//dGVzdDE6YWJj also correct
+POST http://localhost:8080/users/login
+Authorization: Bearer dGVzdDphYmM=
 
 ###
-POST http://localhost:8000/users/logout
-Authorization: Bearer eWFrdXA6YWJj
+POST http://localhost:8080/users/logout
+
+# https://smartcalendarapi.herokuapp.com/

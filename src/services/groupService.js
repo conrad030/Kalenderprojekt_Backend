@@ -136,3 +136,21 @@ exports.joinGroup = async function (invCode, userId) {
   VALUES (?, ?, ?)`;
   await db.query(query, [group[0].id, userId, false]);
 };
+
+const findMemberOfGroup = async function (userId, groupId) {
+  if (!groupId || !userId) throw new Error("Missing arguments");
+  let query = `
+  SELECT * FROM SmartCalendar.Group_Member
+  WHERE userId = ?
+  AND groupId = ?;`;
+  let [members, _] = await db.query(query, [userId, groupId]);
+  //No members found
+  if (members.length === 0) return null;
+  members[0].isAdmin = members[0].isAdmin === 1;
+  return members[0];
+};
+
+exports.isGroupMember = async function (userId, groupId) {
+  let member = await findMemberOfGroup(userId, groupId);
+  return (await findMemberOfGroup(userId, groupId)) !== null;
+};
