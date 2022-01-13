@@ -3,8 +3,8 @@ const teamService = require("../services/teamService");
 exports.create = async (req, res) => {
   let { groupId, name, colorCode } = req.body;
   try {
-    await teamService.createTeam(groupId, name, colorCode);
-    res.status(201).json({ message: "created team" });
+    let team = await teamService.createTeam(groupId, name, colorCode);
+    res.status(201).json(team);
   } catch (error) {
     console.error(error.message);
     res.status(error.statusCode).json({ message: error.message });
@@ -60,8 +60,8 @@ exports.update = async (req, res) => {
 exports.delete = async (req, res) => {
   let { id } = req.params;
   try {
-    await teamService.delete(id);
-    res.status(200).json({ message: "deleted team" });
+    let deletedTeam = await teamService.delete(id);
+    res.status(200).json(deletedTeam);
   } catch (error) {
     console.error(error.message);
     res.status(404).json({ message: error.message });

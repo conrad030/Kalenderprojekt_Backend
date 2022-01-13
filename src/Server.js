@@ -6,13 +6,19 @@ dotenv.config();
 const mysqlSession = require("mysql2/promise");
 var session = require("express-session");
 var MySQLStore = require("express-mysql-session")(session);
+var cookieParser = require("cookie-parser");
 
 app.use(express.json());
+app.use(cookieParser());
+
 app.use(
   cors({
     exposedHeaders: ["Authorization"],
   })
 );
+
+app;
+
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(

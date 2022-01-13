@@ -17,8 +17,12 @@ async function genInvCode(length) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
   let invCodeQuery = `SELECT * FROM SmartCalendar.Group WHERE invitationCode = ?`;
-  let [invCodeResult, fields] = await db.query(invCodeQuery, [result]);
-  if (!invCodeResult.length == 0) genInvCode(length);
+  try {
+    let [invCodeResult, fields] = await db.query(invCodeQuery, [result]);
+    if (!invCodeResult.length == 0) genInvCode(length);
+  } catch (err) {
+    throw new ServiceError("Internal Service Error", 500);
+  }
 
   return result;
 }
@@ -32,21 +36,24 @@ async function genInvCode(length) {
  */
 exports.create = async function (name, password, userId) {
   if (!name || !password) throw new ServiceError("Invalid data", 400);
-  let invCode = await genInvCode(5);
-  let hash = await bcrypt.hash(password, 5);
-  // let currentUser = userService.findById(userId)
+  try {
+    let invCode = await genInvCode(5);
+    let hash = await bcrypt.hash(password, 5);
+    // let currentUser = userService.findById(userId)
 
-  let groupInsertQuery = `
+    let groupInsertQuery = `
   INSERT INTO SmartCalendar.Group (name, password, invitationCode, colorCode) VALUES (?, ?, ?, 'FFFFFF');`;
-  let adminInsertQuery = `INSERT INTO SmartCalendar.Group_Member (groupId, userId, isAdmin) VALUES (?, ?, ?)`;
+    let adminInsertQuery = `INSERT INTO SmartCalendar.Group_Member (groupId, userId, isAdmin) VALUES (?, ?, ?)`;
 
-  // Create and find new group
-  let results = await db.query(groupInsertQuery, [name, hash, invCode]);
-  let newGroup = await this.findOne(results[0].insertId);
-  // Add user to new group and make them admin
-  await db.query(adminInsertQuery, [newGroup.id, userId, true]);
-
-  return newGroup;
+    // Create and find new group
+    let results = await db.query(groupInsertQuery, [name, hash, invCode]);
+    let newGroup = await this.findOne(results[0].insertId);
+    // Add user to new group and make them admin
+    await db.query(adminInsertQuery, [newGroup.id, userId, true]);
+    return newGroup;
+  } catch (err) {
+    throw new ServiceError("Internal Service Error", 500);
+  }
 };
 
 /**
@@ -55,9 +62,13 @@ exports.create = async function (name, password, userId) {
  */
 exports.findAll = async function () {
   let query = `SELECT * FROM SmartCalendar.Group`;
-  let [groups, fields] = await db.query(query);
-  if (groups.length === 0) return;
-  return groups;
+  try {
+    let [groups, fields] = await db.query(query);
+    if (groups.length === 0) return;
+    return groups;
+  } catch (err) {
+    throw new ServiceError("Internal Service Error", 500);
+  }
 };
 
 /**
@@ -69,8 +80,15 @@ exports.findOne = async function (id) {
   if (!id) throw new ServiceError("Invalid data", 400);
   let query = `SELECT * FROM SmartCalendar.Group
     WHERE id = ?;`;
+  let groups;
 
-  let [groups, fields] = await db.query(query, [id]);
+  try {
+    let results = await db.query(query, [id]);
+    groups = results[0];
+  } catch (err) {
+    throw new ServiceError("Internal Service Error", 500);
+  }
+
   //No groups found
   if (groups.length === 0) throw new ServiceError("Not found", 404);
   return groups[0];
@@ -81,23 +99,27 @@ exports.findOne = async function (id) {
  * @param {number} id
  * @param {string} name
  * @param {string} password
+ * TODO make parameters optional
  * @returns group
  */
 exports.update = async function (id, name, password) {
   if (!id || !name || !password) throw new ServiceError("Invalid data", 400);
-  var group = await this.findOne(id);
+  await this.findOne(id);
 
-  if (!group) throw new ServiceError("Not found", 404);
-  let hash = bcrypt.hash(password, 5);
+  let hash = await bcrypt.hash(password, 5);
 
   let query = `UPDATE SmartCalendar.Group SET 
   name = ?,
   password = ?
   WHERE id = ?;`;
 
-  await db.query(query, [name, hash, id]);
-
-  return group;
+  try {
+    await db.query(query, [name, hash, id]);
+    group = await this.findOne(id);
+    return group;
+  } catch (err) {
+    throw new ServiceError("Internal Service Error", 500);
+  }
 };
 
 /**
@@ -112,8 +134,12 @@ exports.delete = async function (id) {
   if (!group) throw new ServiceError("Not found", 400);
   let deleteQuery = `DELETE from SmartCalendar.Group WHERE id = ?`;
 
-  await db.query(deleteQuery, [id]);
-  return group;
+  try {
+    await db.query(deleteQuery, [id]);
+    return group;
+  } catch (err) {
+    throw new ServiceError("Internal Service Error", 500);
+  }
 };
 
 /**
@@ -128,13 +154,18 @@ exports.joinGroup = async function (invCode, userId) {
   let [member, memberFields] = await db.query(checkQuery, [userId]);
   if (!member.length == 0) throw new ServiceError("User already exists", 400);
 
+  let query = `INSERT INTO SmartCalendar.Group_Member (groupId, userId, isAdmin)
+  VALUES (?, ?, ?)`;
+
   let groupQuery = `SELECT * FROM SmartCalendar.Group 
   WHERE invitationCode = ?`;
   let [group, fields] = await db.query(groupQuery, [invCode]);
 
-  let query = `INSERT INTO SmartCalendar.Group_Member (groupId, userId, isAdmin)
-  VALUES (?, ?, ?)`;
-  await db.query(query, [group[0].id, userId, false]);
+  try {
+    await db.query(query, [group[0].id, userId, false]);
+  } catch (err) {
+    throw new ServiceError("Internal Service Error", 500);
+  }
 };
 
 const findMemberOfGroup = async function (userId, groupId) {
@@ -143,11 +174,16 @@ const findMemberOfGroup = async function (userId, groupId) {
   SELECT * FROM SmartCalendar.Group_Member
   WHERE userId = ?
   AND groupId = ?;`;
-  let [members, _] = await db.query(query, [userId, groupId]);
-  //No members found
-  if (members.length === 0) return null;
-  members[0].isAdmin = members[0].isAdmin === 1;
-  return members[0];
+
+  try {
+    let [members, _] = await db.query(query, [userId, groupId]);
+    //No members found
+    if (members.length === 0) return null;
+    members[0].isAdmin = members[0].isAdmin === 1;
+    return members[0];
+  } catch (err) {
+    throw new ServiceError("Internal Service Error", 500);
+  }
 };
 
 exports.isGroupMember = async function (userId, groupId) {

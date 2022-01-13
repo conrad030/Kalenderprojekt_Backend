@@ -7,7 +7,7 @@ exports.createUser = async function (username, email, password) {
     throw new ServiceError("Missing data", 400);
   if (await this.findOneWithUsername(username))
     throw new ServiceError("username already exists", 400);
-  if (await findByEmail(email))
+  if (await this.findByEmail(email))
     throw new ServiceError("email already exists", 400);
   //Query
   let hash = await bcrypt.hash(password, 5);

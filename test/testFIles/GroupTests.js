@@ -1,16 +1,36 @@
 const chai = require("chai");
 const app = require("../../src/Server");
 const groupService = require("../../src/services/groupService");
+var agent;
+
+// Initial Login
+describe("POST", () => {
+  it("should log in dummy user", (done) => {
+    agent = chai.request.agent(app);
+    agent
+      .post("/users/login")
+      .set("Authorization", "Bearer dGVzdDphYmM=")
+      .then((res) => {
+        try {
+          res.should.have.cookie("session_cookie");
+          res.should.have.status(200);
+        } catch (err) {
+          console.log(err.message);
+        }
+        done();
+      });
+  });
+});
 
 //Create
 describe("POST", () => {
   it("should create one group", (done) => {
-    chai
-      .request(app)
+    agent
       .post("/groups/create")
       .set("Content-Type", "application/json")
       .send({ name: "testGroup", password: "testPassword" })
-      .end((err, res) => {
+      .then((res) => {
+        console.log(res.body.json());
         res.should.have.status(201);
         res.body.should.be.a("object");
         done();
@@ -40,11 +60,13 @@ describe("GET", () => {
       .get("/groups/")
       .end((err, allGroups) => {
         chai
+
           .request(app)
           .get("/groups/" + allGroups.body.at(-1).id)
           .end((err, res) => {
             res.should.have.status(200);
             res.body.should.be.a("object");
+
             done();
           });
       });
@@ -66,6 +88,7 @@ describe("PUT", () => {
           .end((err, res) => {
             res.should.have.status(200);
             res.body.should.be.a("object");
+
             done();
           });
       });
@@ -85,6 +108,7 @@ describe("DELETE", () => {
           .end((err, res) => {
             res.should.have.status(200);
             res.body.should.be.a("object");
+
             done();
           });
       });
