@@ -10,6 +10,7 @@ var MySQLStore = require("express-mysql-session")(session);
 app.use(express.json());
 app.use(
   cors({
+    origin: "http://localhost:3000",
     credentials: true,
     exposedHeaders: ["Authorization"],
   })
@@ -59,6 +60,7 @@ app.use(
       sameSite: true,
       maxAge: 4.32e7,
       path: "/",
+      domain: process.env.DOMAIN,
     },
   })
 );
