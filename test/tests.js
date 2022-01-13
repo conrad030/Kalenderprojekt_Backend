@@ -10,7 +10,7 @@ chai.should();
 
 // GROUPS
 describe("Groups", () => {
-  require("./testFIles/GroupTests");
+  require("./testFiles/GroupTests");
 });
 
 // describe("Teams", () => {

@@ -1,19 +1,26 @@
 const chai = require("chai");
 const app = require("../../src/Server");
+const chaiHttp = require("chai-http");
 const groupService = require("../../src/services/groupService");
-var agent;
+var cookies;
+
+// Config
+chai.use(chaiHttp);
+chai.should();
 
 // Initial Login
 describe("POST", () => {
   it("should log in dummy user", (done) => {
-    agent = chai.request.agent(app);
-    agent
+    chai
+      .request(app)
       .post("/users/login")
       .set("Authorization", "Bearer dGVzdDphYmM=")
-      .then((res) => {
+      .end((err, res) => {
         try {
           res.should.have.cookie("session_cookie");
           res.should.have.status(200);
+          cookies = res.headers["set-cookie"].pop().split(";")[0];
+          console.log(cookies);
         } catch (err) {
           console.log(err.message);
         }
@@ -25,15 +32,16 @@ describe("POST", () => {
 //Create
 describe("POST", () => {
   it("should create one group", (done) => {
-    agent
+    chai
+      .request(app)
       .post("/groups/create")
       .set("Content-Type", "application/json")
+      .set("cookie", cookies)
       .send({ name: "testGroup", password: "testPassword" })
-      .then((res) => {
-        console.log(res.body.json());
+      .end((err, res) => {
         res.should.have.status(201);
-        res.body.should.be.a("object");
         done();
+        res.body.should.be.a("object");
       });
   });
 });
@@ -44,6 +52,8 @@ describe("GET", () => {
     chai
       .request(app)
       .get("/groups/")
+      .set("Content-Type", "application/json")
+      .set("cookie", cookies)
       .end((err, res) => {
         res.should.have.status(200);
         res.body.should.be.a("array");
@@ -58,11 +68,14 @@ describe("GET", () => {
     chai
       .request(app)
       .get("/groups/")
+      .set("Content-Type", "application/json")
+      .set("cookie", cookies)
       .end((err, allGroups) => {
         chai
-
           .request(app)
           .get("/groups/" + allGroups.body.at(-1).id)
+          .set("Content-Type", "application/json")
+          .set("cookie", cookies)
           .end((err, res) => {
             res.should.have.status(200);
             res.body.should.be.a("object");
@@ -79,11 +92,14 @@ describe("PUT", () => {
     chai
       .request(app)
       .get("/groups/")
+      .set("Content-Type", "application/json")
+      .set("cookie", cookies)
       .end((err, allGroups) => {
         chai
           .request(app)
           .put("/groups/" + allGroups.body.at(-1).id)
           .set("Content-Type", "application/json")
+          .set("cookie", cookies)
           .send({ name: "changedGroupName", password: "changedPassword" })
           .end((err, res) => {
             res.should.have.status(200);
@@ -101,10 +117,14 @@ describe("DELETE", () => {
     chai
       .request(app)
       .get("/groups/")
+      .set("Content-Type", "application/json")
+      .set("cookie", cookies)
       .end((err, allGroups) => {
         chai
           .request(app)
           .delete("/groups/" + allGroups.body.at(-1).id)
+          .set("Content-Type", "application/json")
+          .set("cookie", cookies)
           .end((err, res) => {
             res.should.have.status(200);
             res.body.should.be.a("object");
