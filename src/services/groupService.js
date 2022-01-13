@@ -1,6 +1,7 @@
 const { log } = require("console");
 const db = require("../database/Database").initDb();
 const { ServiceError } = require("../errors");
+const bcrypt = require("bcrypt");
 
 /**
  * Generate a 5 char long invite code
@@ -32,6 +33,7 @@ async function genInvCode(length) {
 exports.create = async function (name, password, userId) {
   if (!name || !password) throw new ServiceError("Invalid data", 400);
   let invCode = await genInvCode(5);
+  let hash = await bcrypt.hash(password, 5);
   // let currentUser = userService.findById(userId)
 
   let groupInsertQuery = `
@@ -39,9 +41,8 @@ exports.create = async function (name, password, userId) {
   let adminInsertQuery = `INSERT INTO SmartCalendar.Group_Member (groupId, userId, isAdmin) VALUES (?, ?, ?)`;
 
   // Create and find new group
-  let results = await db.query(groupInsertQuery, [name, password, invCode]);
+  let results = await db.query(groupInsertQuery, [name, hash, invCode]);
   let newGroup = await this.findOne(results[0].insertId);
-
   // Add user to new group and make them admin
   await db.query(adminInsertQuery, [newGroup.id, userId, true]);
 
@@ -87,12 +88,14 @@ exports.update = async function (id, name, password) {
   var group = await this.findOne(id);
 
   if (!group) throw new ServiceError("Not found", 404);
+  let hash = bcrypt.hash(password, 5);
+
   let query = `UPDATE SmartCalendar.Group SET 
   name = ?,
   password = ?
   WHERE id = ?;`;
 
-  await db.query(query, [name, password, id]);
+  await db.query(query, [name, hash, id]);
 
   return group;
 };

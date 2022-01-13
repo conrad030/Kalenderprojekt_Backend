@@ -35,7 +35,8 @@ exports.addMember = async function (teamId, userId) {
   let findQuery = `SELECT * FROM SmartCalendar.User_Team WHERE id = ?;`;
 
   let results = await db.query(insertQuery, [teamId, userId]);
-  await db.query(findQuery, [results[0].insertId]);
+ let newMember =  await db.query(findQuery, [results[0].insertId]);
+ return newMember
 };
 
 /**
@@ -60,7 +61,7 @@ exports.findOne = async function (id) {
 `;
   let [teams, fields] = await db.query(query, [id]);
   //No team found
-  if (teams.length === 0) return;
+  if (teams.length === 0) throw new ServiceError("Not found", 404);
   return teams[0];
 };
 
@@ -74,7 +75,6 @@ exports.findOne = async function (id) {
 exports.update = async function (id, name, colorCode) {
   if (!id || !name || !colorCode) throw new ServiceError("Invalid data", 400);
   var team = this.findOne(id);
-  if (!team) throw new ServiceError("Not found", 404);
 
   let query = `UPDATE SmartCalendar.Team SET 
   name = ?,
@@ -96,7 +96,6 @@ exports.delete = async function (id) {
   if (!id) throw new ServiceError("Invalid data", 400);
   var team = await this.findOne(id);
 
-  if (!team) throw new ServiceError("Not found", 400);
   let deleteQuery = `DELETE from SmartCalendar.Team WHERE id = ?`;
 
   await db.query(deleteQuery, [id]);

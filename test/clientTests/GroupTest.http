@@ -21,6 +21,7 @@ Content-Type: application/json
 
 ###
 # Invite and add user to group
+
 GET http://localhost:8000/groups/invitation/IG5qD
 Content-Type: application/json
 
