@@ -16,9 +16,11 @@ exports.login = async function (req, res) {
   var [username, password] = credentials.split(":");
   try {
     let { userId, isAdmin } = await userService.login(username, password);
-    req.session.userId = userId;
-    req.session.isAdmin = isAdmin;
-    res.status(200).json({ message: "User successfully logged in" });
+    req.session.regenerate(function (err) {
+      req.session.userId = userId;
+      req.session.isAdmin = isAdmin;
+      res.status(200).json({ message: "User successfully logged in" });
+    });
   } catch (error) {
     console.log(error.message);
     res.status(404).json({ message: "Bad input" });
