@@ -10,16 +10,8 @@ var MySQLStore = require("express-mysql-session")(session);
 app.use(express.json());
 
 //Cors setup
-let acceptedDomain =
-  process.env.NODE_ENV == "PROD" ? "http://localhost:3000" : undefined;
 let corsOptions = {
-  origin: function (origin, callback) {
-    if (origin == acceptedDomain) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
+  origin: process.env.NODE_ENV == "PROD" ? "http://localhost:3000" : undefined,
   credentials: true,
   exposedHeaders: ["Authorization"],
 };
