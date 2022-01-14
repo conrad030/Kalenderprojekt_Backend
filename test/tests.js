@@ -11,16 +11,5 @@ chai.should();
 // GROUPS
 describe("Groups", () => {
   require("./testFiles/GroupTests");
+  require("./testFiles/TeamTests");
 });
-
-// describe("Teams", () => {
-//   describe("POST", () => {
-//     it("should create one team in group", (done) => {
-//       chai
-//         .request(app)
-//         .post("/teams/create")
-//         .set("Content-Type", "application-json")
-//         .send({ groupId: "" });
-//     });
-//   });
-// });

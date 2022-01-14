@@ -1,12 +1,7 @@
 const chai = require("chai");
 const app = require("../../src/Server");
-const chaiHttp = require("chai-http");
-const groupService = require("../../src/services/groupService");
+let allGroups;
 var cookies;
-
-// Config
-chai.use(chaiHttp);
-chai.should();
 
 // Initial Login
 describe("POST", () => {
@@ -20,7 +15,6 @@ describe("POST", () => {
           res.should.have.cookie("session_cookie");
           res.should.have.status(200);
           cookies = res.headers["set-cookie"].pop().split(";")[0];
-          console.log(cookies);
         } catch (err) {
           console.log(err.message);
         }
@@ -37,7 +31,7 @@ describe("POST", () => {
       .post("/groups/create")
       .set("Content-Type", "application/json")
       .set("cookie", cookies)
-      .send({ name: "testGroup", password: "testPassword" })
+      .send({ name: "chaiGroup", password: "chaiPW" })
       .end((err, res) => {
         res.should.have.status(201);
         done();
@@ -57,6 +51,7 @@ describe("GET", () => {
       .end((err, res) => {
         res.should.have.status(200);
         res.body.should.be.a("array");
+        allGroups = res.body;
         done();
       });
   });
@@ -67,21 +62,13 @@ describe("GET", () => {
   it("should get one group", (done) => {
     chai
       .request(app)
-      .get("/groups/")
+      .get("/groups/" + allGroups.at(-1).id)
       .set("Content-Type", "application/json")
       .set("cookie", cookies)
-      .end((err, allGroups) => {
-        chai
-          .request(app)
-          .get("/groups/" + allGroups.body.at(-1).id)
-          .set("Content-Type", "application/json")
-          .set("cookie", cookies)
-          .end((err, res) => {
-            res.should.have.status(200);
-            res.body.should.be.a("object");
-
-            done();
-          });
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("object");
+        done();
       });
   });
 });
@@ -91,46 +78,14 @@ describe("PUT", () => {
   it("should update one group", (done) => {
     chai
       .request(app)
-      .get("/groups/")
+      .put("/groups/" + allGroups.at(-1).id)
       .set("Content-Type", "application/json")
       .set("cookie", cookies)
-      .end((err, allGroups) => {
-        chai
-          .request(app)
-          .put("/groups/" + allGroups.body.at(-1).id)
-          .set("Content-Type", "application/json")
-          .set("cookie", cookies)
-          .send({ name: "changedGroupName", password: "changedPassword" })
-          .end((err, res) => {
-            res.should.have.status(200);
-            res.body.should.be.a("object");
-
-            done();
-          });
-      });
-  });
-});
-
-// Delete
-describe("DELETE", () => {
-  it("should delete one group", (done) => {
-    chai
-      .request(app)
-      .get("/groups/")
-      .set("Content-Type", "application/json")
-      .set("cookie", cookies)
-      .end((err, allGroups) => {
-        chai
-          .request(app)
-          .delete("/groups/" + allGroups.body.at(-1).id)
-          .set("Content-Type", "application/json")
-          .set("cookie", cookies)
-          .end((err, res) => {
-            res.should.have.status(200);
-            res.body.should.be.a("object");
-
-            done();
-          });
+      .send({ name: "changedGroupName", password: "changedPassword" })
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("object");
+        done();
       });
   });
 });
