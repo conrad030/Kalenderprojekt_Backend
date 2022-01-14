@@ -17,17 +17,17 @@ Content-Type: application/json
 ###
 
 # Get one team
-GET http://localhost:8000/teams/1
+GET http://localhost:8000/teams/3333
 Content-Type: application/json
 
 ###
 
 # Update team
-PUT http://localhost:8000/teams/1
+PUT http://localhost:8000/teams/3
 Content-Type: application/json
 
 {
-  "groupId": 10,
+  "groupId": 1,
   "name": "Changed Team Name 2",
   "colorCode": "FFFFFF"
 }
