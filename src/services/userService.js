@@ -39,10 +39,9 @@ exports.login = async function (username, password) {
 exports.findOneWithUsername = async function (username) {
   let query = `SELECT * FROM SmartCalendar.User 
     WHERE username = ?;`;
-
   let [users, fields] = await db.query(query, [username]);
   //No user found
-  if (users.length == 0) return;
+  if (users.length == 0) return null;
   return users[0];
 };
 
@@ -52,17 +51,16 @@ exports.findOne = async function (id) {
 
   let [users, fields] = await db.query(query, [id]);
   //No user found
-  if (users.length == 0) return;
+  if (users.length == 0) return null;
   return users[0];
 };
 
 exports.findByEmail = async function (email) {
   let query = `SELECT * FROM SmartCalendar.User 
     WHERE email= ? `;
-
   let [users, fields] = await db.query(query, [email]);
   //No user found
-  if (users.length == 0) return;
+  if (users.length == 0) return null;
   return users[0];
 };
 
