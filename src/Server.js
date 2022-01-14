@@ -11,7 +11,7 @@ app.use(express.json());
 
 //Cors setup
 let corsOptions = {
-  origin: "http://localhost:3000",
+  origin: process.env.NODE_ENV == "PROD" ? "http://localhost:3000" : undefined,
   credentials: true,
   exposedHeaders: ["Authorization"],
 };
