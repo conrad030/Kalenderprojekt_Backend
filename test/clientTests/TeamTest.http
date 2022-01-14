@@ -33,6 +33,10 @@ Content-Type: application/json
 }
 ###
 
+
+
+###
+
 # Delete team
 DELETE http://localhost:8000/teams/2
 Content-Type: application/json

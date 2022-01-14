@@ -84,7 +84,7 @@ describe("GET", () => {
   it("should get one team", (done) => {
     chai
       .request(app)
-      .get("/teams/" + allTeams.at(-1).id)
+      .get(`/teams/${allTeams.at(-1).id}`)
       .set("Content-Type", "application/json")
       .set("cookie", cookies)
       .end((err, res) => {
@@ -100,7 +100,7 @@ describe("PUT", () => {
   it("should update one team", (done) => {
     chai
       .request(app)
-      .put("/teams/" + allTeams.at(-1).id)
+      .put(`/teams/${allTeams.at(-1).id}`)
       .set("Content-Type", "application/json")
       .set("cookie", cookies)
       .send({
@@ -121,7 +121,7 @@ describe("DELETE", () => {
   it("should delete one team", (done) => {
     chai
       .request(app)
-      .delete("/teams/" + allTeams.at(-1).id)
+      .delete(`/teams/${allTeams.at(-1).id}`)
       .set("Content-Type", "application/json")
       .set("cookie", cookies)
       .end((err, res) => {
@@ -137,7 +137,7 @@ describe("DELETE", () => {
   it("should delete one group", (done) => {
     chai
       .request(app)
-      .delete("/groups/" + allGroups.at(-1).id)
+      .delete(`/groups/${allGroups.at(-1).id}`)
       .set("Content-Type", "application/json")
       .set("cookie", cookies)
       .end((err, res) => {

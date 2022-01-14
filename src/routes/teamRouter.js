@@ -7,7 +7,18 @@ const middleware = require("../middleware/Middleware");
 router.post("/", middleware.checkAuthentication, controller.create);
 
 // Add member to Team
-router.post("/add/:id", middleware.checkAuthentication, controller.addMember);
+router.post(
+  "/member/:id",
+  middleware.checkAuthentication,
+  controller.addMember
+);
+
+// Remove member from Team
+router.delete(
+  "/member/:id",
+  middleware.checkAuthentication,
+  controller.delMember
+);
 
 // Get all Teams
 router.get("/", middleware.checkAuthentication, controller.findAll);

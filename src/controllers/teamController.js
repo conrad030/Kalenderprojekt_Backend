@@ -11,13 +11,32 @@ exports.create = async (req, res) => {
   }
 };
 
+/**
+ * TODO: Query in url instead of sending in body
+ */
 exports.addMember = async (req, res) => {
   let { teamId } = req.params;
   let { groupId } = req.body;
 
   try {
-    await teamService.addMember(teamId, groupId);
-    res.status(201).json({ message: "added user to team" });
+    let newMember = await teamService.addMember(teamId, groupId);
+    res.status(201).json(newMember);
+  } catch (error) {
+    console.error(error.message);
+    res.status(error.statusCode).json({ message: error.message });
+  }
+};
+
+/**
+ * TODO: Query in url instead of sending in body
+ */
+exports.delMember = async (req, res) => {
+  let { teamId } = req.params;
+  let { userId } = req.body;
+
+  try {
+    let deletedMember = await teamService.delMember(teamId, userId);
+    res.status(201).json(deletedMember);
   } catch (error) {
     console.error(error.message);
     res.status(error.statusCode).json({ message: error.message });

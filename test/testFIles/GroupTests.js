@@ -57,12 +57,32 @@ describe("GET", () => {
   });
 });
 
+/**
+ * ! Doesn't work yet, need to create another user first and add them
+ */
+// Add user to group
+// describe("POST", () => {
+//   it("should add user to new group", (done) => {
+//     let invCode = allGroups.at(-1).invitationCode;
+//     chai
+//       .request(app)
+//       .get(`/groups/invitation/${invCode}`)
+//       .set("Content-Type", "application/json")
+//       .set("cookie", cookies)
+//       .end((err, res) => {
+//         if (err) console.log(err.message);
+//         res.should.have.status(200);
+//         done();
+//       });
+//   });
+// });
+
 // Get one
 describe("GET", () => {
   it("should get one group", (done) => {
     chai
       .request(app)
-      .get("/groups/" + allGroups.at(-1).id)
+      .get(`/groups/${allGroups.at(-1).id}`)
       .set("Content-Type", "application/json")
       .set("cookie", cookies)
       .end((err, res) => {
@@ -78,7 +98,7 @@ describe("PUT", () => {
   it("should update one group", (done) => {
     chai
       .request(app)
-      .put("/groups/" + allGroups.at(-1).id)
+      .put(`/groups/${allGroups.at(-1).id}`)
       .set("Content-Type", "application/json")
       .set("cookie", cookies)
       .send({ name: "changedGroupName", password: "changedPassword" })
