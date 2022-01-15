@@ -33,6 +33,7 @@ describe("GET", () => {
       .set("Content-Type", "application/json")
       .set("cookie", cookies)
       .end((err, res) => {
+        if (err) console.log(err);
         res.should.have.status(200);
         res.body.should.be.a("array");
         allGroups = res.body;
@@ -55,6 +56,7 @@ describe("POST", () => {
         colorCode: "FFFFFF",
       })
       .end((err, res) => {
+        if (err) console.log(err);
         res.should.have.status(201);
         done();
         res.body.should.be.a("object");
@@ -71,6 +73,7 @@ describe("GET", () => {
       .set("Content-Type", "application/json")
       .set("cookie", cookies)
       .end((err, res) => {
+        if (err) console.log(err);
         res.should.have.status(200);
         res.body.should.be.a("array");
         allTeams = res.body;
@@ -88,6 +91,7 @@ describe("GET", () => {
       .set("Content-Type", "application/json")
       .set("cookie", cookies)
       .end((err, res) => {
+        if (err) console.log(err);
         res.should.have.status(200);
         res.body.should.be.a("object");
         done();
@@ -109,6 +113,7 @@ describe("PUT", () => {
         colorCode: "BBBBBB",
       })
       .end((err, res) => {
+        if (err) console.log(err);
         res.should.have.status(200);
         res.body.should.be.a("object");
         done();
@@ -125,6 +130,7 @@ describe("DELETE", () => {
       .set("Content-Type", "application/json")
       .set("cookie", cookies)
       .end((err, res) => {
+        if (err) console.log(err);
         res.should.have.status(200);
         res.body.should.be.a("object");
         done();
@@ -141,6 +147,7 @@ describe("DELETE", () => {
       .set("Content-Type", "application/json")
       .set("cookie", cookies)
       .end((err, res) => {
+        if (err) console.log(err);
         res.should.have.status(200);
         res.body.should.be.a("object");
         done();

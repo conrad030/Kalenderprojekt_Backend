@@ -33,6 +33,7 @@ describe("POST", () => {
       .set("cookie", cookies)
       .send({ name: "chaiGroup", password: "chaiPW" })
       .end((err, res) => {
+        if (err) console.log(err);
         res.should.have.status(201);
         done();
         res.body.should.be.a("object");
@@ -49,6 +50,7 @@ describe("GET", () => {
       .set("Content-Type", "application/json")
       .set("cookie", cookies)
       .end((err, res) => {
+        if (err) console.log(err);
         res.should.have.status(200);
         res.body.should.be.a("array");
         allGroups = res.body;
@@ -70,6 +72,7 @@ describe("GET", () => {
 //       .set("Content-Type", "application/json")
 //       .set("cookie", cookies)
 //       .end((err, res) => {
+// if (err) console.log(err);
 //         if (err) console.log(err.message);
 //         res.should.have.status(200);
 //         done();
@@ -86,6 +89,7 @@ describe("GET", () => {
       .set("Content-Type", "application/json")
       .set("cookie", cookies)
       .end((err, res) => {
+        if (err) console.log(err);
         res.should.have.status(200);
         res.body.should.be.a("object");
         done();
@@ -103,9 +107,12 @@ describe("PUT", () => {
       .set("cookie", cookies)
       .send({ name: "changedGroupName", password: "changedPassword" })
       .end((err, res) => {
+        if (err) console.log(err);
         res.should.have.status(200);
         res.body.should.be.a("object");
         done();
       });
   });
 });
+
+/// ERRORS ///

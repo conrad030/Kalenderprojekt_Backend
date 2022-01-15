@@ -1,4 +1,4 @@
-const { log } = require("console");
+const { log, group: newGroup } = require("console");
 const db = require("../database/Database").initDb();
 const { ServiceError } = require("../errors");
 const bcrypt = require("bcrypt");
@@ -20,7 +20,8 @@ async function genInvCode(length) {
   try {
     let [invCodeResult, fields] = await db.query(invCodeQuery, [result]);
     if (!invCodeResult.length == 0) genInvCode(length);
-  } catch (err) {
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
     throw new ServiceError("Internal Service Error", 500);
   }
 
@@ -48,10 +49,13 @@ exports.create = async function (name, password, userId) {
     // Create and find new group
     let results = await db.query(groupInsertQuery, [name, hash, invCode]);
     let newGroup = await this.findOne(results[0].insertId);
+
     // Add user to new group and make them admin
     await db.query(adminInsertQuery, [newGroup.id, userId, true]);
-    return newGroup;
-  } catch (err) {
+    let result = await structure(newGroup);
+    return result;
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
     throw new ServiceError("Internal Service Error", 500);
   }
 };
@@ -65,11 +69,29 @@ exports.findAll = async function () {
   try {
     let [groups, fields] = await db.query(query);
     if (groups.length === 0) return;
-    return groups;
-  } catch (err) {
+    return Promise.all(
+      groups.map((group) => {
+        return structure(group);
+      })
+    );
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
     throw new ServiceError("Internal Service Error", 500);
   }
 };
+
+async function structure(group) {
+  let query = `SELECT * FROM SmartCalendar.Group_Member WHERE groupId = ?`;
+  let [members, fields] = await db.query(query, [group.id]);
+  return {
+    id: group.id,
+    name: group.name,
+    createdAt: group.createdAt,
+    invitationCode: group.invitationCode,
+    colorCode: group.colorCode,
+    members,
+  };
+}
 
 /**
  * Get single group
@@ -85,13 +107,15 @@ exports.findOne = async function (id) {
   try {
     let results = await db.query(query, [id]);
     groups = results[0];
-  } catch (err) {
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
     throw new ServiceError("Internal Service Error", 500);
   }
 
   //No groups found
   if (groups.length === 0) throw new ServiceError("Not found", 404);
-  return groups[0];
+  let result = await structure(groups[0]);
+  return result;
 };
 
 /**
@@ -115,9 +139,11 @@ exports.update = async function (id, name, password) {
 
   try {
     await db.query(query, [name, hash, id]);
-    group = await this.findOne(id);
-    return group;
-  } catch (err) {
+    let group = await this.findOne(id);
+    let result = await structure(group);
+    return result;
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
     throw new ServiceError("Internal Service Error", 500);
   }
 };
@@ -136,8 +162,10 @@ exports.delete = async function (id) {
 
   try {
     await db.query(deleteQuery, [id]);
-    return group;
-  } catch (err) {
+    let result = await structure(group);
+    return result;
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
     throw new ServiceError("Internal Service Error", 500);
   }
 };
@@ -163,7 +191,8 @@ exports.joinGroup = async function (invCode, userId) {
 
   try {
     await db.query(query, [group[0].id, userId, false]);
-  } catch (err) {
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
     throw new ServiceError("Internal Service Error", 500);
   }
 };
@@ -181,7 +210,8 @@ const findMemberOfGroup = async function (userId, groupId) {
     if (members.length === 0) return null;
     members[0].isAdmin = members[0].isAdmin === 1;
     return members[0];
-  } catch (err) {
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
     throw new ServiceError("Internal Service Error", 500);
   }
 };

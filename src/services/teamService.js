@@ -18,7 +18,8 @@ exports.createTeam = async function (groupId, name, colorCode) {
     let results = await db.query(query, [groupId, name, colorCode]);
     let newTeam = await this.findOne(results[0].insertId);
     return newTeam;
-  } catch (err) {
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
     throw new ServiceError("Internal Service Error", 500);
   }
 };
@@ -40,7 +41,8 @@ exports.addMember = async function (teamId, userId) {
     let results = await db.query(insertQuery, [teamId, userId]);
     let newMember = await db.query(findQuery, [results[0].insertId]);
     return newMember;
-  } catch (err) {
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
     throw new ServiceError("Internal Service Error", 500);
   }
 };
@@ -54,7 +56,8 @@ exports.findAll = async function () {
     let query = `SELECT * FROM SmartCalendar.Team`;
     let [allTeams, fields] = await db.query(query);
     return allTeams;
-  } catch (err) {
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
     throw new ServiceError("Internal Service Error", 500);
   }
 };
@@ -73,7 +76,8 @@ exports.findOne = async function (id) {
   try {
     let results = await db.query(query, [id]);
     teams = results[0];
-  } catch (err) {
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
     throw new ServiceError("Internal Service Error", 500);
   }
 
@@ -91,7 +95,6 @@ exports.findOne = async function (id) {
  */
 exports.update = async function (id, name, colorCode) {
   if (!id || !name || !colorCode) throw new ServiceError("Invalid data", 400);
-  this.findOne(id);
 
   let query = `UPDATE SmartCalendar.Team SET 
   name = ?,
@@ -99,9 +102,11 @@ exports.update = async function (id, name, colorCode) {
   WHERE id = ?;`;
   try {
     await db.query(query, [name, colorCode, id]);
+    this.findOne(id);
     let updatedTeam = await this.findOne(id);
     return updatedTeam;
-  } catch (err) {
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
     throw new ServiceError("Internal Service Error", 500);
   }
 };
@@ -118,7 +123,8 @@ exports.delete = async function (id) {
   let deleteQuery = `DELETE from SmartCalendar.Team WHERE id = ?`;
   try {
     await db.query(deleteQuery, [id]);
-  } catch (err) {
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
     throw new ServiceError("Internal Service Error", 500);
   }
 
