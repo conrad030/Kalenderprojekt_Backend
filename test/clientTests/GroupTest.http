@@ -3,7 +3,7 @@ POST http://localhost:8000/groups/create
 Content-Type: application/json
 
 {
-  "name": "Very New Group 3",
+  "name": "Test Group",
   "password": "passwort"
 }
 
@@ -22,7 +22,7 @@ Content-Type: application/json
 ###
 # Invite and add user to group
 
-GET http://localhost:8000/groups/invitation/IG5qD
+GET http://localhost:8000/groups/invitation/lXWn7
 Content-Type: application/json
 
 ###
@@ -39,5 +39,5 @@ Content-Type: application/json
 ###
 
 # Delete group
-DELETE http://localhost:8000/groups/10
+DELETE http://localhost:8000/groups/109
 Content-Type: application/json

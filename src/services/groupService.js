@@ -126,10 +126,8 @@ exports.findOne = async function (id) {
  * TODO make parameters optional
  * @returns group
  */
-exports.update = async function (id, name, password) {
+exports.update = async function (id, name, password, userId) {
   if (!id || !name || !password) throw new ServiceError("Invalid data", 400);
-  await this.findOne(id);
-
   let hash = await bcrypt.hash(password, 5);
 
   let query = `UPDATE SmartCalendar.Group SET 
@@ -138,6 +136,7 @@ exports.update = async function (id, name, password) {
   WHERE id = ?;`;
 
   try {
+    await isGroupAdmin(id, userId);
     await db.query(query, [name, hash, id]);
     let group = await this.findOne(id);
     let result = await structure(group);
@@ -151,9 +150,10 @@ exports.update = async function (id, name, password) {
 /**
  * Delete group
  * @param {number} id
+ * @param {number} userId
  * @returns deleted group
  */
-exports.delete = async function (id) {
+exports.delete = async function (id, userId) {
   if (!id) throw new ServiceError("Invalid data", 400);
   var group = await this.findOne(id);
 
@@ -161,14 +161,35 @@ exports.delete = async function (id) {
   let deleteQuery = `DELETE from SmartCalendar.Group WHERE id = ?`;
 
   try {
-    await db.query(deleteQuery, [id]);
+    await isGroupAdmin(id, userId);
     let result = await structure(group);
+    await db.query(deleteQuery, [id]);
     return result;
   } catch (e) {
     if (e instanceof ServiceError) throw e;
     throw new ServiceError("Internal Service Error", 500);
   }
 };
+/**
+ * Checks if the logged in user is in the group and then if they are group admin
+ * @param  {number} groupId
+ * @param  {number} userId
+ * @returns true (if admin)
+ */
+
+async function isGroupAdmin(groupId, userId) {
+  try {
+    let query = `SELECT * FROM SmartCalendar.Group_Member WHERE (groupId = ? AND userId = ?)`;
+    let [member, fields] = await db.query(query, [groupId, userId]);
+    if (member.length == 0)
+      throw new ServiceError("Internal Server Error", 500);
+    if (!member[0].isAdmin) throw new ServiceError("Forbidden", 403);
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
+    throw new ServiceError("Internal Service Error", 500);
+  }
+  return true;
+}
 
 /**
  * Add current user to the group with given invite code
