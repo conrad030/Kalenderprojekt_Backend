@@ -2,8 +2,9 @@ const chai = require("chai");
 const app = require("../../src/Server");
 let allGroups;
 var cookies;
+var altCookies;
 
-// Initial Login
+// First User Initial Login
 describe("POST", () => {
   it("should log in dummy user", (done) => {
     chai
@@ -59,26 +60,46 @@ describe("GET", () => {
   });
 });
 
+// Second User Initial Login
+describe("POST", () => {
+  it("should log in dummy user", (done) => {
+    chai
+      .request(app)
+      .post("/users/login")
+      .set("Authorization", "Bearer dGVzdDphYmM=")
+      .end((err, res) => {
+        try {
+          res.should.have.cookie("session_cookie");
+          res.should.have.status(200);
+          altCookies = res.headers["set-cookie"].pop().split(";")[0];
+        } catch (err) {
+          console.log(err.message);
+        }
+        done();
+      });
+  });
+});
+
 /**
- * ! Doesn't work yet, need to create another user first and add them
+ * ! Doesn't exactly work yet, checks for "already exists" error
  */
 // Add user to group
-// describe("POST", () => {
-//   it("should add user to new group", (done) => {
-//     let invCode = allGroups.at(-1).invitationCode;
-//     chai
-//       .request(app)
-//       .get(`/groups/invitation/${invCode}`)
-//       .set("Content-Type", "application/json")
-//       .set("cookie", cookies)
-//       .end((err, res) => {
-// if (err) console.log(err);
-//         if (err) console.log(err.message);
-//         res.should.have.status(200);
-//         done();
-//       });
-//   });
-// });
+describe("POST", () => {
+  it("should add user to new group (but fail because logged in user is already in group)", (done) => {
+    let invCode = allGroups.at(-1).invitationCode;
+    chai
+      .request(app)
+      .get(`/groups/invitation/${invCode}`)
+      .set("Content-Type", "application/json")
+      .set("cookie", altCookies)
+      .end((err, res) => {
+        res.should.have.status(400);
+        // if (err) console.log(err);
+        // if (err) console.log(err.message);
+        done();
+      });
+  });
+});
 
 // Get one
 describe("GET", () => {
