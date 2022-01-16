@@ -1,5 +1,6 @@
 const db = require("../database/Database").initDb();
 const { ServiceError } = require("../errors");
+const groupService = require("./groupService");
 
 /**
  * Create a team
@@ -11,11 +12,11 @@ const { ServiceError } = require("../errors");
 exports.createTeam = async function (groupId, name, colorCode) {
   if (!groupId || !name || !colorCode)
     throw new ServiceError("Invalid data", 400);
-  let query = `INSERT INTO SmartCalendar.Team (groupId, name, colorCode) 
-    VALUES (?, ?, ?);
+  let query = `INSERT INTO SmartCalendar.Team (name, colorCode, groupid) VALUES (?, ?, ?);
 `;
   try {
-    let results = await db.query(query, [groupId, name, colorCode]);
+    await groupService.findOne(groupId);
+    let results = await db.query(query, [name, colorCode, groupId]);
     let newTeam = await this.findOne(results[0].insertId);
     return newTeam;
   } catch (e) {

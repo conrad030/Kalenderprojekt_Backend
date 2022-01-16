@@ -2,7 +2,7 @@ POST http://localhost:8000/users/signup
 Content-Type: application/json
 
 {
-    "username": "test2",
+    "username": "test",
     "email": "test2@user.com",
     "password": "abc"
 }
@@ -14,7 +14,7 @@ Content-Type: application/json
 //dGVzdDE6YWJj also correct
 //dGVzdDI6YWJj
 POST http://localhost:8000/users/login
-Authorization: Bearer dGVzdDI6YWJj
+Authorization: Bearer dGVzdDphYmM=
 
 ###
 POST http://localhost:8000/users/logout

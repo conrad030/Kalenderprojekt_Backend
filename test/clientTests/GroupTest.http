@@ -16,7 +16,7 @@ Content-Type: application/json
 ###
 
 # Get specific group
-GET http://localhost:8000/groups/90
+GET http://localhost:8000/groups/109
 Content-Type: application/json
 
 ###
@@ -28,7 +28,7 @@ Content-Type: application/json
 ###
 
 # Update group
-PUT http://localhost:8000/groups/10
+PUT http://localhost:8000/groups/109
 Content-Type: application/json
 
 {
