@@ -1,9 +1,9 @@
-POST http://localhost:8000/users/signup
+POST http://localhost:8080/users/signup
 Content-Type: application/json
 
 {
-    "username": "yakup",
-    "email": "yakup@user.com",
+    "username": "test",
+    "email": "test@user.com",
     "password": "abc"
 }
 
@@ -17,5 +17,11 @@ Authorization: Bearer dGVzdDphYmM=
 
 ###
 POST http://localhost:8080/users/logout
+
+###
+GET http://localhost:8080/users/groups
+
+###
+DELETE http://localhost:8080/users/1
 
 # https://smartcalendarapi.herokuapp.com/

@@ -19,4 +19,6 @@ router.get(
   controller.findGroupsForUser
 );
 
+router.delete("/:id", middleware.checkIfAdmin, controller.deleteUser);
+
 module.exports = router;

@@ -41,3 +41,12 @@ exports.findGroupsForUser = async function (req, res) {
     res.status(error.statusCode).json({ message: error.message });
   }
 };
+
+exports.deleteUser = async function (req, res) {
+  try {
+    let user = await userService.deleteUser(req.params.id);
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(error.statusCode).json({ message: error.message });
+  }
+};

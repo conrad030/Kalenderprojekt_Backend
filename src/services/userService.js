@@ -89,3 +89,18 @@ exports.findGroupsForUser = async function (userId) {
     throw new ServiceError("Internal server error", 500);
   }
 };
+
+exports.deleteUser = async function (userId) {
+  var user = await this.findOne(userId);
+  if (!user) throw new ServiceError("User not found", 404);
+  let query = `
+  DELETE FROM SmartCalendar.User
+  WHERE id = ?;
+  `;
+  try {
+    await db.query(query, [userId]);
+    return user;
+  } catch (error) {
+    throw new ServiceError("Internal Server Error", 500);
+  }
+};
