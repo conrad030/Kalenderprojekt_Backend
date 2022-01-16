@@ -103,7 +103,6 @@ exports.update = async function (id, name, colorCode) {
   WHERE id = ?;`;
   try {
     await db.query(query, [name, colorCode, id]);
-    this.findOne(id);
     let updatedTeam = await this.findOne(id);
     return updatedTeam;
   } catch (e) {
