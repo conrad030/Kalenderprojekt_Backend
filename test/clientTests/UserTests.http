@@ -3,11 +3,7 @@ Content-Type: application/json
 
 {
     "username": "test",
-<<<<<<< HEAD
-    "email": "test2@user.com",
-=======
     "email": "test@user.com",
->>>>>>> development
     "password": "abc"
 }
 
@@ -15,16 +11,9 @@ Content-Type: application/json
 //dGVzdDphYmM= correct
 //dGVzdDp3cm9uZw== wrong password
 //d3Jvbmc6d3Jvbmc= wrong data
-<<<<<<< HEAD
-//dGVzdDE6YWJj also correct
-//dGVzdDI6YWJj
-POST http://localhost:8000/users/login
-Authorization: Bearer dGVzdDphYmM=
-=======
 //YWRtaW46YWRtaW4xMjM= admin
 POST http://localhost:8080/users/login
 Authorization: Bearer YWRtaW46YWRtaW4xMjM=
->>>>>>> development
 
 ###
 POST http://localhost:8000/users/logout
