@@ -51,3 +51,13 @@ Content-Type: application/json
   "appointmentId": "3",
   "date": "2021-12-15"
 }
+
+###
+POST https://localhost:8080/appointments/uploadFile/12
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="testImage.png"
+
+< ./../utils/testImage.png
+--WebAppBoundary--

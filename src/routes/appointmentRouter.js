@@ -48,6 +48,14 @@ router.post(
   controller.createException
 );
 
+router.post(
+  "/uploadFile/:id",
+  middleware.checkAuthentication,
+  middleware.checkIfAppointmentAdmin,
+  middleware.upload,
+  controller.uploadFile
+);
+
 // Delete Appointment
 router.delete(
   "/:id",

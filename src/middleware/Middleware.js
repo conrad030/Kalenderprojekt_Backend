@@ -1,4 +1,5 @@
 const appointmentService = require("../services/appointmentService");
+const multer = require("multer");
 
 function checkAuthentication(req, res, next) {
   //If user is authenticated
@@ -38,8 +39,17 @@ async function checkIfAppointmentAdmin(req, res, next) {
   }
 }
 
+const storage = multer.memoryStorage({
+  destination: function (req, file, callback) {
+    callback(null, "");
+  },
+});
+
+const upload = multer({ storage }).single("file");
+
 module.exports = {
   checkAuthentication,
   checkIfAdmin,
   checkIfAppointmentAdmin,
+  upload,
 };
