@@ -45,8 +45,9 @@ exports.joinGroup = async (req, res) => {
 exports.update = async (req, res) => {
   let { id } = req.params;
   let { name, password } = req.body;
+  let { userId } = req.session;
   try {
-    let group = await groupService.update(id, name, password);
+    let group = await groupService.update(id, name, password, userId);
     res.status(200).json(group);
   } catch (error) {
     console.error(error.message);
@@ -56,8 +57,9 @@ exports.update = async (req, res) => {
 
 exports.delete = async (req, res) => {
   let { id } = req.params;
+  let { userId } = req.session;
   try {
-    let deletedGroup = await groupService.delete(id);
+    let deletedGroup = await groupService.delete(id, userId);
     res.status(200).json(deletedGroup);
   } catch (error) {
     console.error(error.message);

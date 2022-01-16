@@ -5,6 +5,7 @@
   "main": "src/Server.js",
   "scripts": {
     "test": "mocha",
+    "test-watch": "nodemon --exec \"npm test\"",
     "start": "nodemon"
   },
   "author": "Conrad Felgentreff",
@@ -13,6 +14,7 @@
     "bcrypt": "^5.0.1",
     "chai": "^4.3.4",
     "chai-http": "^4.3.0",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
