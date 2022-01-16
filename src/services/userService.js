@@ -73,3 +73,19 @@ exports.findById = async function (id) {
   if (users.length == 0) return;
   return users[0];
 };
+
+exports.findGroupsForUser = async function (userId) {
+  let query = `
+  SELECT g.*
+  FROM SmartCalendar.Group g, SmartCalendar.Group_Member member
+  WHERE g.id = member.groupId
+  AND member.userId = ?;
+  `;
+  try {
+    let [groups, _] = await db.query(query, [userId]);
+    return groups;
+  } catch (error) {
+    console.log(error);
+    throw new ServiceError("Internal server error", 500);
+  }
+};

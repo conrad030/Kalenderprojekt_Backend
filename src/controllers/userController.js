@@ -32,3 +32,12 @@ exports.logout = async function (req, res) {
   res.clearCookie("session_cookie", { path: "/" });
   res.status(200).json({ message: "user successfully logged out" });
 };
+
+exports.findGroupsForUser = async function (req, res) {
+  try {
+    let groups = await userService.findGroupsForUser(req.session.userId);
+    res.status(200).json(groups);
+  } catch (error) {
+    res.status(error.statusCode).json({ message: error.message });
+  }
+};
