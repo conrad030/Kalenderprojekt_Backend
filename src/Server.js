@@ -82,4 +82,9 @@ app.listen(port, () => {
   console.log("Server started on port " + port);
 });
 
+const userService = require("./services/userService");
+userService.makeDefaultAdmin().catch((error) => {
+  console.log("Error: " + error.message);
+});
+
 module.exports = app;
