@@ -3,21 +3,40 @@ const teamService = require("../services/teamService");
 exports.create = async (req, res) => {
   let { groupId, name, colorCode } = req.body;
   try {
-    await teamService.createTeam(groupId, name, colorCode);
-    res.status(201).json({ message: "created team" });
+    let team = await teamService.createTeam(groupId, name, colorCode);
+    res.status(201).json(team);
   } catch (error) {
     console.error(error.message);
     res.status(error.statusCode).json({ message: error.message });
   }
 };
 
+/**
+ * TODO: Query in url instead of sending in body
+ */
 exports.addMember = async (req, res) => {
   let { teamId } = req.params;
   let { groupId } = req.body;
 
   try {
-    await teamService.addMember(teamId, groupId);
-    res.status(201).json({ message: "added user to team" });
+    let newMember = await teamService.addMember(teamId, groupId);
+    res.status(201).json(newMember);
+  } catch (error) {
+    console.error(error.message);
+    res.status(error.statusCode).json({ message: error.message });
+  }
+};
+
+/**
+ * TODO: Query in url instead of sending in body
+ */
+exports.delMember = async (req, res) => {
+  let { teamId } = req.params;
+  let { userId } = req.body;
+
+  try {
+    let deletedMember = await teamService.delMember(teamId, userId);
+    res.status(201).json(deletedMember);
   } catch (error) {
     console.error(error.message);
     res.status(error.statusCode).json({ message: error.message });
@@ -60,8 +79,8 @@ exports.update = async (req, res) => {
 exports.delete = async (req, res) => {
   let { id } = req.params;
   try {
-    await teamService.delete(id);
-    res.status(200).json({ message: "deleted team" });
+    let deletedTeam = await teamService.delete(id);
+    res.status(200).json(deletedTeam);
   } catch (error) {
     console.error(error.message);
     res.status(404).json({ message: error.message });

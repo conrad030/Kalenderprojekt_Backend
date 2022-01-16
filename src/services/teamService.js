@@ -1,5 +1,6 @@
 const db = require("../database/Database").initDb();
 const { ServiceError } = require("../errors");
+const groupService = require("./groupService");
 
 /**
  * Create a team
@@ -11,13 +12,17 @@ const { ServiceError } = require("../errors");
 exports.createTeam = async function (groupId, name, colorCode) {
   if (!groupId || !name || !colorCode)
     throw new ServiceError("Invalid data", 400);
-  let query = `INSERT INTO SmartCalendar.Team (groupId, name, colorCode) 
-    VALUES (?, ?, ?);
+  let query = `INSERT INTO SmartCalendar.Team (name, colorCode, groupid) VALUES (?, ?, ?);
 `;
-
-  let results = await db.query(query, [groupId, name, colorCode]);
-  let newTeam = await this.findOne(results[0].insertId);
-  return newTeam;
+  try {
+    await groupService.findOne(groupId);
+    let results = await db.query(query, [name, colorCode, groupId]);
+    let newTeam = await this.findOne(results[0].insertId);
+    return newTeam;
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
+    throw new ServiceError("Internal Service Error", 500);
+  }
 };
 
 /**
@@ -33,9 +38,14 @@ exports.addMember = async function (teamId, userId) {
   let insertQuery = `INSERT INTO SmartCalendar.User_Team (teamId, userId)
   VALUES (?, ?)`;
   let findQuery = `SELECT * FROM SmartCalendar.User_Team WHERE id = ?;`;
-
-  let results = await db.query(insertQuery, [teamId, userId]);
-  await db.query(findQuery, [results[0].insertId]);
+  try {
+    let results = await db.query(insertQuery, [teamId, userId]);
+    let newMember = await db.query(findQuery, [results[0].insertId]);
+    return newMember;
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
+    throw new ServiceError("Internal Service Error", 500);
+  }
 };
 
 /**
@@ -43,9 +53,14 @@ exports.addMember = async function (teamId, userId) {
  * @returns Array - all teams
  */
 exports.findAll = async function () {
-  let query = `SELECT * FROM SmartCalendar.Team`;
-  let [allTeams, fields] = await db.query(query);
-  return allTeams;
+  try {
+    let query = `SELECT * FROM SmartCalendar.Team`;
+    let [allTeams, fields] = await db.query(query);
+    return allTeams;
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
+    throw new ServiceError("Internal Service Error", 500);
+  }
 };
 
 /**
@@ -58,9 +73,17 @@ exports.findOne = async function (id) {
   let query = `SELECT * FROM SmartCalendar.Team
     WHERE id = ? ;
 `;
-  let [teams, fields] = await db.query(query, [id]);
+  let teams;
+  try {
+    let results = await db.query(query, [id]);
+    teams = results[0];
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
+    throw new ServiceError("Internal Service Error", 500);
+  }
+
   //No team found
-  if (teams.length === 0) return;
+  if (teams.length === 0) throw new ServiceError("Not found", 404);
   return teams[0];
 };
 
@@ -73,18 +96,19 @@ exports.findOne = async function (id) {
  */
 exports.update = async function (id, name, colorCode) {
   if (!id || !name || !colorCode) throw new ServiceError("Invalid data", 400);
-  var team = this.findOne(id);
-  if (!team) throw new ServiceError("Not found", 404);
 
   let query = `UPDATE SmartCalendar.Team SET 
   name = ?,
   colorCode = ?
   WHERE id = ?;`;
-
-  await db.query(query, [name, colorCode, id]);
-  let updatedTeam = await this.findOne(id);
-
-  return updatedTeam;
+  try {
+    await db.query(query, [name, colorCode, id]);
+    let updatedTeam = await this.findOne(id);
+    return updatedTeam;
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
+    throw new ServiceError("Internal Service Error", 500);
+  }
 };
 
 /**
@@ -96,9 +120,13 @@ exports.delete = async function (id) {
   if (!id) throw new ServiceError("Invalid data", 400);
   var team = await this.findOne(id);
 
-  if (!team) throw new ServiceError("Not found", 400);
   let deleteQuery = `DELETE from SmartCalendar.Team WHERE id = ?`;
+  try {
+    await db.query(deleteQuery, [id]);
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
+    throw new ServiceError("Internal Service Error", 500);
+  }
 
-  await db.query(deleteQuery, [id]);
   return team;
 };

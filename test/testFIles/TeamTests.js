@@ -1,10 +1,10 @@
 const chai = require("chai");
 const app = require("../../src/Server");
-let allGroups;
 var cookies;
-var altCookies;
+let allGroups;
+let allTeams;
 
-// First User Initial Login
+// Initial Login
 describe("POST", () => {
   it("should log in dummy user", (done) => {
     chai
@@ -24,25 +24,7 @@ describe("POST", () => {
   });
 });
 
-//Create
-describe("POST", () => {
-  it("should create one group", (done) => {
-    chai
-      .request(app)
-      .post("/groups/create")
-      .set("Content-Type", "application/json")
-      .set("cookie", cookies)
-      .send({ name: "chaiGroup", password: "chaiPW" })
-      .end((err, res) => {
-        if (err) console.log(err);
-        res.should.have.status(201);
-        done();
-        res.body.should.be.a("object");
-      });
-  });
-});
-
-// Get all
+// Get all groups
 describe("GET", () => {
   it("should get all groups", (done) => {
     chai
@@ -60,53 +42,52 @@ describe("GET", () => {
   });
 });
 
-// Second User Initial Login
+//Create team
 describe("POST", () => {
-  it("should log in dummy user", (done) => {
+  it("should create one team", (done) => {
     chai
       .request(app)
-      .post("/users/login")
-      .set("Authorization", "Bearer dGVzdDphYmM=")
-      .end((err, res) => {
-        try {
-          res.should.have.cookie("session_cookie");
-          res.should.have.status(200);
-          altCookies = res.headers["set-cookie"].pop().split(";")[0];
-        } catch (err) {
-          console.log(err.message);
-        }
-        done();
-      });
-  });
-});
-
-/**
- * ! Doesn't exactly work yet, checks for "already exists" error
- */
-// Add user to group
-describe("POST", () => {
-  it("should add user to new group (but fail because logged in user is already in group)", (done) => {
-    let invCode = allGroups.at(-1).invitationCode;
-    chai
-      .request(app)
-      .get(`/groups/invitation/${invCode}`)
+      .post("/teams")
       .set("Content-Type", "application/json")
-      .set("cookie", altCookies)
+      .set("cookie", cookies)
+      .send({
+        groupId: allGroups.at(-1).id,
+        name: "chaiTeam",
+        colorCode: "FFFFFF",
+      })
       .end((err, res) => {
-        res.should.have.status(400);
-        // if (err) console.log(err);
-        // if (err) console.log(err.message);
+        if (err) console.log(err);
+        res.should.have.status(201);
         done();
+        res.body.should.be.a("object");
       });
   });
 });
 
-// Get one
+// Get all teams
 describe("GET", () => {
-  it("should get one group", (done) => {
+  it("should get all teams", (done) => {
     chai
       .request(app)
-      .get(`/groups/${allGroups.at(-1).id}`)
+      .get("/teams/")
+      .set("Content-Type", "application/json")
+      .set("cookie", cookies)
+      .end((err, res) => {
+        if (err) console.log(err);
+        res.should.have.status(200);
+        res.body.should.be.a("array");
+        allTeams = res.body;
+        done();
+      });
+  });
+});
+
+// Get one team
+describe("GET", () => {
+  it("should get one team", (done) => {
+    chai
+      .request(app)
+      .get(`/teams/${allTeams.at(-1).id}`)
       .set("Content-Type", "application/json")
       .set("cookie", cookies)
       .end((err, res) => {
@@ -118,15 +99,19 @@ describe("GET", () => {
   });
 });
 
-// Update
+// Update team
 describe("PUT", () => {
-  it("should update one group", (done) => {
+  it("should update one team", (done) => {
     chai
       .request(app)
-      .put(`/groups/${allGroups.at(-1).id}`)
+      .put(`/teams/${allTeams.at(-1).id}`)
       .set("Content-Type", "application/json")
       .set("cookie", cookies)
-      .send({ name: "changedGroupName", password: "changedPassword" })
+      .send({
+        groupId: allGroups.at(-1).id,
+        name: "changedChaiTeam",
+        colorCode: "BBBBBB",
+      })
       .end((err, res) => {
         if (err) console.log(err);
         res.should.have.status(200);
@@ -136,4 +121,36 @@ describe("PUT", () => {
   });
 });
 
-/// ERRORS ///
+// Delete team
+describe("DELETE", () => {
+  it("should delete one team", (done) => {
+    chai
+      .request(app)
+      .delete(`/teams/${allTeams.at(-1).id}`)
+      .set("Content-Type", "application/json")
+      .set("cookie", cookies)
+      .end((err, res) => {
+        if (err) console.log(err);
+        res.should.have.status(200);
+        res.body.should.be.a("object");
+        done();
+      });
+  });
+});
+
+// Delete group
+describe("DELETE", () => {
+  it("should delete one group", (done) => {
+    chai
+      .request(app)
+      .delete(`/groups/${allGroups.at(-1).id}`)
+      .set("Content-Type", "application/json")
+      .set("cookie", cookies)
+      .end((err, res) => {
+        if (err) console.log(err);
+        res.should.have.status(200);
+        res.body.should.be.a("object");
+        done();
+      });
+  });
+});
