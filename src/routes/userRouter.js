@@ -12,4 +12,13 @@ router.post("/login", controller.login);
 //logout User
 router.post("/logout", controller.logout);
 
+//Find all groups in where the logged in user is member
+router.get(
+  "/groups",
+  middleware.checkAuthentication,
+  controller.findGroupsForUser
+);
+
+router.delete("/:id", middleware.checkIfAdmin, controller.deleteUser);
+
 module.exports = router;

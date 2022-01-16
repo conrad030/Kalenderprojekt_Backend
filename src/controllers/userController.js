@@ -16,9 +16,11 @@ exports.login = async function (req, res) {
   var [username, password] = credentials.split(":");
   try {
     let { userId, isAdmin } = await userService.login(username, password);
-    req.session.userId = userId;
-    req.session.isAdmin = isAdmin;
-    res.status(200).json({ message: "User successfully logged in" });
+    req.session.regenerate(function (err) {
+      req.session.userId = userId;
+      req.session.isAdmin = isAdmin;
+      res.status(200).json({ message: "User successfully logged in" });
+    });
   } catch (error) {
     console.log(error.message);
     res.status(404).json({ message: "Bad input" });
@@ -29,4 +31,22 @@ exports.logout = async function (req, res) {
   req.session.destroy();
   res.clearCookie("session_cookie", { path: "/" });
   res.status(200).json({ message: "user successfully logged out" });
+};
+
+exports.findGroupsForUser = async function (req, res) {
+  try {
+    let groups = await userService.findGroupsForUser(req.session.userId);
+    res.status(200).json(groups);
+  } catch (error) {
+    res.status(error.statusCode).json({ message: error.message });
+  }
+};
+
+exports.deleteUser = async function (req, res) {
+  try {
+    let user = await userService.deleteUser(req.params.id);
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(error.statusCode).json({ message: error.message });
+  }
 };

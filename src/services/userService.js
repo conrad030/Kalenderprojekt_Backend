@@ -2,6 +2,29 @@ const db = require("../database/Database").initDb();
 const bcrypt = require("bcrypt");
 const { ServiceError } = require("../errors");
 
+exports.makeDefaultAdmin = async function () {
+  let adminQuery = `
+  SELECT * FROM SmartCalendar.User
+  WHERE isAdmin = 1;
+  `;
+  let [admins, _] = await db.query(adminQuery);
+  if (admins.length > 0) return;
+  let name = process.env.DEFAULT_ADMIN_NAME;
+  let email = process.env.DEFAULT_ADMIN_EMAIL;
+  let password = process.env.DEFAULT_ADMIN_PASSWORD;
+  let hash = await bcrypt.hash(password, 5);
+  let query = `
+        INSERT INTO SmartCalendar.User (username, email, password, isAdmin)
+        VALUES (?, ?, ?, true);
+        `;
+  try {
+    let _ = await db.query(query, [name, email, hash]);
+    console.log("Default admin created");
+  } catch (error) {
+    throw new ServiceError("Internal server error", 500);
+  }
+};
+
 exports.createUser = async function (username, email, password) {
   if (!username || !email || !password)
     throw new ServiceError("Missing data", 400);
@@ -72,4 +95,35 @@ exports.findById = async function (id) {
   //No user found
   if (users.length == 0) return;
   return users[0];
+};
+
+exports.findGroupsForUser = async function (userId) {
+  let query = `
+  SELECT g.*
+  FROM SmartCalendar.Group g, SmartCalendar.Group_Member member
+  WHERE g.id = member.groupId
+  AND member.userId = ?;
+  `;
+  try {
+    let [groups, _] = await db.query(query, [userId]);
+    return groups;
+  } catch (error) {
+    console.log(error);
+    throw new ServiceError("Internal server error", 500);
+  }
+};
+
+exports.deleteUser = async function (userId) {
+  var user = await this.findOne(userId);
+  if (!user) throw new ServiceError("User not found", 404);
+  let query = `
+  DELETE FROM SmartCalendar.User
+  WHERE id = ?;
+  `;
+  try {
+    await db.query(query, [userId]);
+    return user;
+  } catch (error) {
+    throw new ServiceError("Internal Server Error", 500);
+  }
 };
