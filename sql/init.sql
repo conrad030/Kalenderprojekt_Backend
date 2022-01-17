@@ -70,7 +70,7 @@ CREATE TABLE SmartCalendar.Appointment_Member (
 
 CREATE TABLE SmartCalendar.Appointment_File (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `url` VARCHAR(45) NOT NULL,
+  `url` VARCHAR(200) NOT NULL,
   `appointmentId` INT NOT NULL,
   PRIMARY KEY (`id`)
 );

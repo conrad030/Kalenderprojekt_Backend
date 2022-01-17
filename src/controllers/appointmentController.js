@@ -1,5 +1,10 @@
 const appointmentService = require("../services/appointmentService");
 const groupService = require("../services/groupService");
+const AWS = require("aws-sdk");
+const s3 = new AWS.S3({
+  accessKeyId: process.env.AWS_ID,
+  secretAccessKey: process.env.AWS_SECRET,
+});
 
 exports.create = async function (req, res) {
   let {
@@ -155,6 +160,39 @@ exports.createException = async function (req, res) {
     );
     res.status(201).json(appointment);
   } catch (error) {
+    res.status(error.statusCode).json({ message: error.message });
+  }
+};
+
+exports.uploadFile = async function (req, res) {
+  try {
+    if (req.file) {
+      let splittedFile = req.file.originalname.split(".");
+      let fileName = splittedFile[splittedFile.length - 2];
+      let params = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: Date.now() + fileName,
+        Body: req.file.buffer,
+      };
+      s3.upload(params, function (error, data) {
+        if (error) {
+          res.status(500).json({ message: error });
+        } else {
+          appointmentService
+            .addFile(req.params.id, data.Location)
+            .then((appointment) => {
+              res.status(200).json(appointment);
+            })
+            .catch((error) => {
+              res.status(error.statusCode).json({ message: error.message });
+            });
+        }
+      });
+    } else {
+      res.status(403).json({ message: "There is no file" });
+    }
+  } catch (error) {
+    console.log(error);
     res.status(error.statusCode).json({ message: error.message });
   }
 };
