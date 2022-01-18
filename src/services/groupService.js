@@ -32,22 +32,29 @@ async function genInvCode(length) {
  * Create new group and add current user as its admin
  * @param {string} name
  * @param {string} password
+ * @param {string} colorCode
  * @param {number} userId
  * @returns json - created group
  */
-exports.create = async function (name, password, userId) {
-  if (!name || !password) throw new ServiceError("Invalid data", 400);
+exports.create = async function (name, password, colorCode, userId) {
+  if (!userId || !name || !password || !colorCode)
+    throw new ServiceError("Invalid data", 400);
   try {
     let invCode = await genInvCode(5);
     let hash = await bcrypt.hash(password, 5);
     // let currentUser = userService.findById(userId)
 
     let groupInsertQuery = `
-  INSERT INTO SmartCalendar.Group (name, password, invitationCode, colorCode) VALUES (?, ?, ?, 'FFFFFF');`;
+  INSERT INTO SmartCalendar.Group (name, password, invitationCode, colorCode) VALUES (?, ?, ?, ?);`;
     let adminInsertQuery = `INSERT INTO SmartCalendar.Group_Member (groupId, userId, isAdmin) VALUES (?, ?, ?)`;
 
     // Create and find new group
-    let results = await db.query(groupInsertQuery, [name, hash, invCode]);
+    let results = await db.query(groupInsertQuery, [
+      name,
+      hash,
+      invCode,
+      colorCode,
+    ]);
     let newGroup = await this.findOne(results[0].insertId);
 
     // Add user to new group and make them admin
@@ -123,21 +130,24 @@ exports.findOne = async function (id) {
  * @param {number} id
  * @param {string} name
  * @param {string} password
+ * @param {string} colorCode
  * TODO make parameters optional
  * @returns group
  */
-exports.update = async function (id, name, password, userId) {
-  if (!id || !name || !password) throw new ServiceError("Invalid data", 400);
+exports.update = async function (id, name, password, colorCode, userId) {
+  if (!id || !name || !password || !colorCode)
+    throw new ServiceError("Invalid data", 400);
   let hash = await bcrypt.hash(password, 5);
 
   let query = `UPDATE SmartCalendar.Group SET 
   name = ?,
-  password = ?
+  password = ?,
+  colorCode = ?
   WHERE id = ?;`;
 
   try {
     await isGroupAdmin(id, userId);
-    await db.query(query, [name, hash, id]);
+    await db.query(query, [name, hash, colorCode, id]);
     let group = await this.findOne(id);
     let result = await structure(group);
     return result;
@@ -182,8 +192,9 @@ async function isGroupAdmin(groupId, userId) {
     let query = `SELECT * FROM SmartCalendar.Group_Member WHERE (groupId = ? AND userId = ?)`;
     let [member, fields] = await db.query(query, [groupId, userId]);
     if (member.length == 0)
-      throw new ServiceError("Internal Server Error", 500);
-    if (!member[0].isAdmin) throw new ServiceError("Forbidden", 403);
+      throw new ServiceError("Forbidden, not group member", 403);
+    if (!member[0].isAdmin)
+      throw new ServiceError("Forbidden, not group admin", 403);
   } catch (e) {
     if (e instanceof ServiceError) throw e;
     throw new ServiceError("Internal Service Error", 500);
