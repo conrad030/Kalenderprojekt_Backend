@@ -1,10 +1,10 @@
 const groupService = require("../services/groupService");
 
 exports.create = async (req, res) => {
-  let { name, password } = req.body;
+  let { name, password, colorCode } = req.body;
   let id = req.session.userId;
   try {
-    let newGroup = await groupService.create(name, password, id);
+    let newGroup = await groupService.create(name, password, colorCode, id);
     res.status(201).json(newGroup);
   } catch (error) {
     res.status(error.statusCode).json({ message: error.message });
@@ -44,10 +44,16 @@ exports.joinGroup = async (req, res) => {
 
 exports.update = async (req, res) => {
   let { id } = req.params;
-  let { name, password } = req.body;
+  let { name, password, colorCode } = req.body;
   let { userId } = req.session;
   try {
-    let group = await groupService.update(id, name, password, userId);
+    let group = await groupService.update(
+      id,
+      name,
+      password,
+      colorCode,
+      userId
+    );
     res.status(200).json(group);
   } catch (error) {
     console.error(error.message);

@@ -4,7 +4,8 @@ Content-Type: application/json
 
 {
   "name": "Test Group",
-  "password": "passwort"
+  "password": "passwort",
+  "colorCode": "DDDDDD"
 }
 
 ###
@@ -28,12 +29,13 @@ Content-Type: application/json
 ###
 
 # Update group
-PUT http://localhost:8000/groups/109
+PUT http://localhost:8000/groups/13
 Content-Type: application/json
 
 {
   "name": "changedGroup",
-  "password": "changedPassword"
+  "password": "changedPassword",
+  "colorCode" : "FAFAFA"
 }
 
 ###
