@@ -98,6 +98,22 @@ paths:
           description: Not found
         "403":
           description: Not authorized
+  /users/groups:
+    get:
+      tags:
+        - User
+      description: Get all groups in where the logged in user is
+      responses:
+        "200":
+          description: All groups
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GroupSchema"
+        "401":
+          description: Unauthenticated
   /groups/create:
     post:
       tags:
@@ -275,7 +291,7 @@ paths:
         "404":
           description: Not found
   /groups/invitation/{code}:
-    get:
+    post:
       tags:
         - Group
       description: To acces a group
@@ -296,6 +312,21 @@ paths:
         "404":
           description: Not found
   /appointments:
+    get:
+      tags:
+        - Appointment
+      description: Get all appointments for the logged in user
+      responses:
+        "200":
+          description: All appointments for the user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AppointmentSchema"
+        "401":
+          description: Missing authentication
     post:
       tags:
         - Appointment
@@ -419,6 +450,145 @@ paths:
           description: Not authorized
         "404":
           description: Appointment not found
+  /appointments/createException:
+    post:
+      description: Create appointment exception
+      tags:
+        - Appointment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAppointmentExceptionSchema"
+      responses:
+        "201":
+          description: Created exception for appointment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppointmentSchema"
+        "401":
+          description: Missing authentication
+        "403":
+          description: Not authorized
+        "404":
+          description: Appointment not found
+  /appointments/member:
+    post:
+      parameters:
+        - in: query
+          name: appointmentId
+          description: id of appointment
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: userId
+          description: id of user
+          required: true
+          schema:
+            type: integer
+      tags:
+        - Appointment
+      description: add user to appointment
+      responses:
+        "201":
+          description: added user to appointment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppointmentSchema"
+        "400":
+          description: user already in appointment
+        "401":
+          description: not authorized
+        "403":
+          description: missing rights
+    delete:
+      tags:
+        - Appointment
+      description: Deletes appointment member
+      parameters:
+        - in: query
+          name: appointmentId
+          description: id of appointment
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: userId
+          description: id of user
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Successfully deleted team member
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppointmentSchema"
+        "401":
+          description: Missing authentication
+        "403":
+          description: Not authorized
+        "404":
+          description: Not found
+  /member/acceptInvitation/{id}:
+    post:
+      parameters:
+        - in: path
+          name: id
+          description: Pass specific ID of appointment
+          required: true
+          schema:
+            type: integer
+      tags:
+        - Appointment
+      description: Accept invitation to appointment
+      responses:
+        "200":
+          description: Invitation accepted
+        "400":
+          description: user already accepted invitation
+        "401":
+          description: not authorized
+        "404":
+          description: Appointment not found
+  /uploadFile/{id}:
+    post:
+      tags:
+        - Appointment
+      description: Attach a file to an appointment
+      parameters:
+        - in: path
+          name: id
+          description: Pass specific ID of appointment
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: File attached
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppointmentSchema"
+        "403":
+          description: Wrong file format
+        "401":
+          description: not authorized
+        "404":
+          description: Appointment not found
   /teams:
     # GET ALL TEAMS
     get:
@@ -452,6 +622,10 @@ paths:
       responses:
         "201":
           description: created team
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeamSchema"
         "400":
           description: team name already exists
         "401":
@@ -502,6 +676,10 @@ paths:
       responses:
         "200":
           description: updated team
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeamSchema"
         "400":
           description: team name already exists
         "401":
@@ -523,32 +701,41 @@ paths:
       responses:
         "200":
           description: deleted team
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeamSchema"
         "401":
           description: not authorized
         "403":
           description: missing rights
         "404":
           description: not found
-  /team/member/{id}:
+  /team/member:
     post:
       parameters:
-        - in: path
-          name: id
-          description: Pass specific ID of team
+        - in: query
+          name: teamId
+          description: id of team
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: userId
+          description: id of user
           required: true
           schema:
             type: integer
       tags:
         - Team
       description: add user to team
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/User_Team_Schema"
       responses:
         "201":
           description: added user to team
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserTeamSchema"
         "400":
           description: user already in team
         "401":
@@ -560,9 +747,15 @@ paths:
         - Team
       description: Deletes team member
       parameters:
-        - in: path
-          name: id
-          description: Pass specific ID of team member
+        - in: query
+          name: teamId
+          description: id of team
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: userId
+          description: id of user
           required: true
           schema:
             type: integer
@@ -572,7 +765,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User_Team_Schema"
+                $ref: "#/components/schemas/UserTeamSchema"
         "401":
           description: Missing authentication
         "403":
@@ -712,7 +905,8 @@ components:
         - startTime
         - endTime
         - colorCode
-        - createdBy
+        - members
+        - exceptions
       properties:
         id:
           type: integer
@@ -750,9 +944,18 @@ components:
         parentId:
           type: integer
           example: 1
-        createdBy:
-          type: integer
-          example: 1
+        members:
+          type: array
+          items:
+            $ref: "#/components/schemas/AppointmentMemberSchema"
+        exceptions:
+          type: array
+          items:
+            $ref: "#/components/schemas/AppointmentExceptionSchema"
+        files:
+          type: array
+          items:
+            $ref: "#/components/schemas/AppointmentFileSchema"
     EditAppointmentSchema:
       type: object
       properties:
@@ -800,14 +1003,46 @@ components:
         color:
           type: string
           example: "B3B3B3"
-    User_Team_Schema:
+    UserTeamSchema:
       type: object
       required:
+        - id
         - userId
+        - teamId
       properties:
+        id:
+          type: integer
+          example: 1
         userId:
           type: integer
           example: 1
+        teamId:
+          type: integer
+          example: 1
+    AppointmentMemberSchema:
+      type: object
+      required:
+        - id
+        - username
+        - email
+        - isAdmin
+        - acceptedInvitation
+      properties:
+        id:
+          type: integer
+          example: 1
+        username:
+          type: string
+          example: testUser
+        email:
+          type: string
+          example: test@user.com
+        isAdmin:
+          type: boolean
+          example: false
+        acceptedInvitation:
+          type: boolean
+          example: true
     GroupIdSchema:
       type: object
       required:
@@ -824,3 +1059,42 @@ components:
         teamId:
           type: integer
           example: 1
+    CreateAppointmentExceptionSchema:
+      type: object
+      required:
+        - appointmentId
+        - date
+      properties:
+        appointmentId:
+          type: integer
+          example: 1
+        date:
+          type: string
+          format: date
+          example: "2021-12-15"
+    AppointmentExceptionSchema:
+      type: object
+      required:
+        - id
+        - date
+      properties:
+        id:
+          type: integer
+          example: 1
+        date:
+          type: string
+          format: date
+          example: "2021-12-15"
+    AppointmentFileSchema:
+      type: object
+      required:
+        - id
+        - url
+      properties:
+        id:
+          type: integer
+          example: 1
+        url:
+          type: string
+          format: url
+          example: "https://picsum.photos/200/300"
