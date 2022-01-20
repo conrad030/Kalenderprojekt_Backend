@@ -3,6 +3,31 @@ const { ServiceError } = require("../errors");
 const userService = require("./userService");
 const groupService = require("./groupService");
 
+exports.getAppointmentsForUser = async function (userId) {
+  let query = `
+  SELECT appointment.*
+  FROM SmartCalendar.Appointment appointment, SmartCalendar.Appointment_Member member
+  WHERE appointment.id = member.appointmentId
+  AND member.acceptedInvitation = true
+  AND member.userId = ?;
+  `;
+  try {
+    let result = await db.query(query, [userId]);
+    let appointments = result[0];
+    for (var i = 0; i < appointments.length; i++) {
+      let members = await findMembersForAppointment(appointments[i].id);
+      appointments[i].members = members;
+      let exceptions = await findExceptionsForAppointment(appointments[i].id);
+      appointments[i].exceptions = exceptions;
+      let files = await findFilesForAppointment(appointments[i].id);
+      appointments[i].files = files;
+    }
+    return appointments;
+  } catch (error) {
+    throw new ServiceError("Internal Server Error", 500);
+  }
+};
+
 exports.createAppointment = async function (
   groupId,
   title,

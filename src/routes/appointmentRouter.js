@@ -3,6 +3,13 @@ const controller = require("../controllers/appointmentController");
 var router = express.Router();
 const middleware = require("../middleware/Middleware");
 
+//Get all Appointments for user
+router.get(
+  "/",
+  middleware.checkAuthentication,
+  controller.getAppointmentsForUser
+);
+
 // Create Appointment
 router.post("/", middleware.checkAuthentication, controller.create);
 
