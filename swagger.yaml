@@ -38,13 +38,17 @@ paths:
       description: User login
       responses:
         "200":
-          description: User successfully created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserSchema"
+          description: User successfully logged in
         "404":
           description: Bad input
+  /users/logout:
+    post:
+      tags:
+        - User
+      description: User logout
+      responses:
+        "200":
+          description: User successfully logged out
   /users/group/{id}:
     post:
       tags:
@@ -316,6 +320,13 @@ paths:
       tags:
         - Appointment
       description: Get all appointments for the logged in user
+      parameters:
+        - in: query
+          name: inFuture
+          description: Decides if all appointments or only future appointments
+          required: true
+          schema:
+            type: boolean
       responses:
         "200":
           description: All appointments for the user
