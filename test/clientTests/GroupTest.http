@@ -1,10 +1,9 @@
 # Create group
-POST http://localhost:8000/groups/create
+POST http://localhost:8080/groups/create
 Content-Type: application/json
 
 {
   "name": "Test Group",
-  "password": "passwort",
   "colorCode": "DDDDDD"
 }
 

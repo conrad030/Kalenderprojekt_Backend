@@ -12,15 +12,15 @@ Content-Type: application/json
 //dGVzdDp3cm9uZw== wrong password
 //d3Jvbmc6d3Jvbmc= wrong data
 //YWRtaW46YWRtaW4xMjM= admin
-POST http://localhost:8000/users/login
-Authorization: Bearer YWRtaW46YWRtaW4xMjM=
+POST http://localhost:3000/users/login
+Authorization: Bearer dGVzdDphYmM=
 
 
 ###
 POST http://localhost:8000/users/logout
 
 ###0
-GET http://localhost:8000/users/groups
+GET http://localhost:3000/users/groups
 
 ###
 DELETE http://localhost:8000/users/2
