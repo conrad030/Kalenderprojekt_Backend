@@ -17,7 +17,7 @@ Content-Type: application/json
 ###
 
 # Get specific group
-GET http://localhost:8000/groups/109
+GET http://localhost:8000/groups/102
 Content-Type: application/json
 
 ###

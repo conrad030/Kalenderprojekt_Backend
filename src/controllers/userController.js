@@ -19,7 +19,9 @@ exports.login = async function (req, res) {
     req.session.regenerate(function (err) {
       req.session.userId = userId;
       req.session.isAdmin = isAdmin;
-      res.status(200).json({ message: "User successfully logged in" });
+      res
+        .status(200)
+        .json({ message: "User successfully logged in", userId, isAdmin });
     });
   } catch (error) {
     console.log(error.message);
@@ -38,6 +40,21 @@ exports.findGroupsForUser = async function (req, res) {
     let groups = await userService.findGroupsForUser(req.session.userId);
     res.status(200).json(groups);
   } catch (error) {
+    res.status(error.statusCode).json({ message: error.message });
+  }
+};
+
+exports.getUser = async function (req, res) {
+  try {
+    let user = await userService.findOne(req.params.id);
+    res.status(200).json({
+      userId: user.id,
+      username: user.username,
+      email: user.email,
+      isAdmin: user.isAdmin,
+    });
+  } catch (error) {
+    console.error(error.message);
     res.status(error.statusCode).json({ message: error.message });
   }
 };
