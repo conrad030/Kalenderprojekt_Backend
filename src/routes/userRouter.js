@@ -12,7 +12,8 @@ router.post("/login", controller.login);
 //logout User
 router.post("/logout", controller.logout);
 
-router.get("/:id", controller.getUser);
+//Get User
+router.get("/:id", middleware.checkAuthentication, controller.getUser);
 
 //Find all groups in where the logged in user is member
 router.get(
