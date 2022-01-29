@@ -69,13 +69,17 @@ exports.findOneWithUsername = async function (username) {
 };
 
 exports.findOne = async function (id) {
-  let query = `SELECT * FROM SmartCalendar.User 
+  try {
+    let query = `SELECT * FROM SmartCalendar.User 
     WHERE id = ?;`;
-
-  let [users, fields] = await db.query(query, [id]);
-  //No user found
-  if (users.length == 0) return null;
-  return users[0];
+    let [users, fields] = await db.query(query, [id]);
+    //No user found
+    if (users.length == 0) throw new ServiceError("Not found", 404);
+    return users[0];
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
+    throw new ServiceError("Internal Service Error", 500);
+  }
 };
 
 exports.findByEmail = async function (email) {

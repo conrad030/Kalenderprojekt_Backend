@@ -19,6 +19,11 @@ Authorization: Bearer dGVzdDphYmM=
 ###
 POST http://localhost:8000/users/logout
 
+###
+GET http://localhost:8000/users/1
+
+###
+GET http://localhost:8000/users/groups
 ###0
 GET http://localhost:3000/users/groups
 
