@@ -1,18 +1,20 @@
 GET http://localhost:8080/appointments
 
 ###
-POST http://localhost:8000/appointments
+GET http://localhost:8080/appointments?inFuture=true
+
+###
+POST http://localhost:3000/appointments
 Content-Type: application/json
 
 {
-  "groupId": 1,
-  "title": "Projektmeeting",
-  "startDate": "2021-12-15",
-  "startTime": "12:00:00",
-  "endTime": "13:30:00",
-  "colorCode": "FF21CA",
-  "description": "Ein sehr wichtiges Projektmeeting",
-  "colorCode": "FFFFFF"
+  "groupId": 7,
+  "title": "Blue Meeting",
+  "startDate": "2022-01-30",
+  "startTime": "10:00:00",
+  "endTime": "11:00:00",
+  "colorCode": "0000FF",
+  "description": "Erstes Meeting"
 }
 
 ###

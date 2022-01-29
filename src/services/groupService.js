@@ -37,23 +37,27 @@ async function genInvCode(length) {
  * @returns json - created group
  */
 exports.create = async function (name, password, colorCode, userId) {
-  if (!userId || !name || !password || !colorCode)
+  if (!userId || !name || !colorCode)
     throw new ServiceError("Invalid data", 400);
   try {
     let invCode = await genInvCode(5);
-    let hash = await bcrypt.hash(password, 5);
-    // let currentUser = userService.findById(userId)
+    let hash = null;
+    if (password) {
+      hash = await bcrypt.hash(password, 5);
+    }
 
     let groupInsertQuery = `
-  INSERT INTO SmartCalendar.Group (name, password, invitationCode, colorCode) VALUES (?, ?, ?, ?);`;
+  INSERT INTO SmartCalendar.Group (name, invitationCode, colorCode${
+    password ? ", password" : ""
+  }) VALUES (?, ?, ?${password ? ", ?" : ""});`;
     let adminInsertQuery = `INSERT INTO SmartCalendar.Group_Member (groupId, userId, isAdmin) VALUES (?, ?, ?)`;
 
     // Create and find new group
     let results = await db.query(groupInsertQuery, [
       name,
-      hash,
       invCode,
       colorCode,
+      hash,
     ]);
     let newGroup = await this.findOne(results[0].insertId);
 
@@ -62,6 +66,7 @@ exports.create = async function (name, password, colorCode, userId) {
     let result = await structure(newGroup);
     return result;
   } catch (e) {
+    console.log(e);
     if (e instanceof ServiceError) throw e;
     throw new ServiceError("Internal Service Error", 500);
   }

@@ -7,9 +7,11 @@ const s3 = new AWS.S3({
 });
 
 exports.getAppointmentsForUser = async function (req, res) {
+  let inFuture = req.query.inFuture ?? false;
   try {
     let appointments = await appointmentService.getAppointmentsForUser(
-      req.session.userId
+      req.session.userId,
+      inFuture
     );
     res.status(200).json(appointments);
   } catch (error) {

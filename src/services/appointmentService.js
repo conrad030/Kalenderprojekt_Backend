@@ -3,16 +3,18 @@ const { ServiceError } = require("../errors");
 const userService = require("./userService");
 const groupService = require("./groupService");
 
-exports.getAppointmentsForUser = async function (userId) {
+exports.getAppointmentsForUser = async function (userId, inFuture) {
   let query = `
   SELECT appointment.*
   FROM SmartCalendar.Appointment appointment, SmartCalendar.Appointment_Member member
   WHERE appointment.id = member.appointmentId
   AND member.acceptedInvitation = true
-  AND member.userId = ?;
+  AND member.userId = ?
+  ${inFuture ? "AND appointment.startDate >= ?" : ""};
   `;
+  console.log(query);
   try {
-    let result = await db.query(query, [userId]);
+    let result = await db.query(query, [userId, new Date()]);
     let appointments = result[0];
     for (var i = 0; i < appointments.length; i++) {
       let members = await findMembersForAppointment(appointments[i].id);
