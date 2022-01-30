@@ -3,7 +3,7 @@ POST http://localhost:8000/teams
 Content-Type: application/json
 
 {
-  "groupId": 18,
+  "groupId": 1,
   "name": "Very New Team 3",
   "colorCode": "FFFFFF"
 }

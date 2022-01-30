@@ -1,6 +1,7 @@
 const db = require("../database/Database").initDb();
 const bcrypt = require("bcrypt");
 const { ServiceError } = require("../errors");
+const { structure } = require("./groupService");
 
 exports.makeDefaultAdmin = async function () {
   let adminQuery = `
@@ -110,10 +111,18 @@ exports.findGroupsForUser = async function (userId) {
   `;
   try {
     let [groups, _] = await db.query(query, [userId]);
-    return groups;
+
+    const structuredGroups = groups.map(async (group) => {
+      let g = await structure(group);
+      return g;
+    });
+
+    return Promise.all(structuredGroups).then((value) => {
+      return value;
+    });
   } catch (error) {
     console.log(error);
-    throw new serviceerror("internal server error", 500);
+    throw new ServiceError("Internal Server Error", 500);
   }
 };
 
