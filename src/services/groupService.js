@@ -63,7 +63,7 @@ exports.create = async function (name, password, colorCode, userId) {
 
     // Add user to new group and make them admin
     await db.query(adminInsertQuery, [newGroup.id, userId, true]);
-    let result = await structure(newGroup);
+    let result = await this.structure(newGroup);
     return result;
   } catch (e) {
     console.log(e);
@@ -89,18 +89,23 @@ exports.findAllTeams = async function (groupId) {
   }
 };
 
-async function structure(group) {
+exports.structure = async function (group) {
   let query = `SELECT * FROM SmartCalendar.Group_Member WHERE groupId = ?`;
+  let teamsQuery = `SELECT * FROM SmartCalendar.Team WHERE groupId = ?`;
   let [members, fields] = await db.query(query, [group.id]);
+  // Don't use findAllTeams to avoid recursion
+  let [teams, f] = await db.query(teamsQuery, [group.id]);
+  debugger;
   return {
     id: group.id,
     name: group.name,
     createdAt: group.createdAt,
     invitationCode: group.invitationCode,
     colorCode: group.colorCode,
+    teams,
     members,
   };
-}
+};
 
 /**
  * Get single group
@@ -123,7 +128,7 @@ exports.findOne = async function (id) {
 
   //No groups found
   if (groups.length === 0) throw new ServiceError("Not found", 404);
-  let result = await structure(groups[0]);
+  let result = await this.structure(groups[0]);
   return result;
 };
 
@@ -151,7 +156,7 @@ exports.update = async function (id, name, password, colorCode, userId) {
     await isGroupAdmin(id, userId);
     await db.query(query, [name, hash, colorCode, id]);
     let group = await this.findOne(id);
-    let result = await structure(group);
+    let result = await this.structure(group);
     return result;
   } catch (e) {
     if (e instanceof ServiceError) throw e;
@@ -174,7 +179,7 @@ exports.delete = async function (id, userId) {
 
   try {
     await isGroupAdmin(id, userId);
-    let result = await structure(group);
+    let result = await this.structure(group);
     await db.query(deleteQuery, [id]);
     return result;
   } catch (e) {
