@@ -12,7 +12,7 @@ Content-Type: application/json
 //dGVzdDp3cm9uZw== wrong password
 //d3Jvbmc6d3Jvbmc= wrong data
 //YWRtaW46YWRtaW4xMjM= admin
-POST http://localhost:3000/users/login
+POST http://localhost:8000/users/login
 Authorization: Bearer dGVzdDphYmM=
 
 
@@ -24,8 +24,19 @@ GET http://localhost:8000/users/1
 
 ###
 GET http://localhost:8000/users/groups
-###0
-GET http://localhost:3000/users/groups
+
+###
+GET http://localhost:8000/users/groups
+
+###
+PUT http://localhost:8000/users/1127534
+Content-Type: application/json
+
+{
+    "username": "changedUsername",
+    "password": "changedPassword",
+    "email": "changed@gmail.com"
+}
 
 ###
 DELETE http://localhost:8000/users/2

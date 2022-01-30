@@ -15,6 +15,9 @@ router.post("/logout", controller.logout);
 //Get User
 router.get("/:id", middleware.checkAuthentication, controller.getUser);
 
+// Update User
+router.put("/:id", middleware.checkAuthentication, controller.updateUser);
+
 //Find all groups in where the logged in user is member
 router.get(
   "/groups",
