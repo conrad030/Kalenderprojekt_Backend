@@ -23,10 +23,7 @@ POST http://localhost:8000/users/logout
 GET http://localhost:8000/users/1
 
 ###
-GET http://localhost:8000/users/groups
-
-###
-GET http://localhost:8000/users/groups
+GET http://localhost:8000/users/groups/
 
 ###
 PUT http://localhost:8000/users/1127534
