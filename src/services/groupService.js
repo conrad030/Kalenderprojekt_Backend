@@ -76,16 +76,13 @@ exports.create = async function (name, password, colorCode, userId) {
  * Get all groups
  * @returns Array - All groups
  */
-exports.findAll = async function () {
-  let query = `SELECT * FROM SmartCalendar.Group`;
+exports.findAllTeams = async function (groupId) {
+  let query = `SELECT * FROM SmartCalendar.Team WHERE groupId = ?`;
   try {
-    let [groups, fields] = await db.query(query);
-    if (groups.length === 0) return;
-    return Promise.all(
-      groups.map((group) => {
-        return structure(group);
-      })
-    );
+    if (!groupId) throw new ServiceError("Invalid data", 400);
+    let [teams, fields] = await db.query(query, [groupId]);
+    if (teams.length === 0) throw new ServiceError("Not found", 404);
+    return teams;
   } catch (e) {
     if (e instanceof ServiceError) throw e;
     throw new ServiceError("Internal Service Error", 500);

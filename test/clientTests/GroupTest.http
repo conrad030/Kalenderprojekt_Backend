@@ -15,8 +15,14 @@ Content-Type: application/json
 
 ###
 
+# Get all teams for group
+GET http://localhost:8000/groups/teams/12
+Content-Type: application/json
+
+###
+
 # Get specific group
-GET http://localhost:8000/groups/102
+GET http://localhost:8000/groups/12
 Content-Type: application/json
 
 ###
