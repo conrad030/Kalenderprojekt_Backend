@@ -73,8 +73,8 @@ exports.create = async function (name, password, colorCode, userId) {
 };
 
 /**
- * Get all groups
- * @returns Array - All groups
+ * Get all teams of groups
+ * @returns Array - All teams of group
  */
 exports.findAllTeams = async function (groupId) {
   let query = `SELECT * FROM SmartCalendar.Team WHERE groupId = ?`;
@@ -83,6 +83,21 @@ exports.findAllTeams = async function (groupId) {
     await this.findOne(groupId);
     let [teams, fields] = await db.query(query, [groupId]);
     return teams;
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
+    throw new ServiceError("Internal Service Error", 500);
+  }
+};
+
+/**
+ * Get all groups
+ * @returns Array - All groups
+ */
+exports.findAll = async function (groupId) {
+  let query = `SELECT * FROM SmartCalendar.Group`;
+  try {
+    let [groups, fields] = await db.query(query, [groupId]);
+    return groups;
   } catch (e) {
     if (e instanceof ServiceError) throw e;
     throw new ServiceError("Internal Service Error", 500);
