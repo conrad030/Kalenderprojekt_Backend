@@ -113,7 +113,30 @@ exports.findGroupsForUser = async function (userId) {
     return groups;
   } catch (error) {
     console.log(error);
-    throw new ServiceError("Internal server error", 500);
+    throw new serviceerror("internal server error", 500);
+  }
+};
+
+exports.updateUser = async function (id, username, email, password) {
+  {
+    if (!id || !username || !email || !password)
+      throw new ServiceError("Invalid data", 400);
+    let hash = await bcrypt.hash(password, 5);
+
+    let query = `UPDATE SmartCalendar.User SET 
+  username = ?,
+  email = ?,
+  password = ?
+  WHERE id = ?;`;
+
+    try {
+      await db.query(query, [username, email, hash, id]);
+      let user = await this.findOne(id);
+      return user;
+    } catch (e) {
+      if (e instanceof ServiceError) throw e;
+      throw new ServiceError("Internal Service Error", 500);
+    }
   }
 };
 

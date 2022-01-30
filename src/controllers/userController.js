@@ -59,6 +59,23 @@ exports.getUser = async function (req, res) {
   }
 };
 
+exports.updateUser = async function (req, res) {
+  try {
+    let { username, email, password } = req.body;
+    let { id } = req.params;
+    let user = await userService.updateUser(id, username, email, password);
+    res.status(200).json({
+      userId: user.id,
+      username: user.username,
+      email: user.email,
+      isAdmin: user.isAdmin,
+    });
+  } catch (e) {
+    console.error(e.message);
+    res.status(e.statusCode).json({ message: e.message });
+  }
+};
+
 exports.deleteUser = async function (req, res) {
   try {
     let user = await userService.deleteUser(req.params.id);
