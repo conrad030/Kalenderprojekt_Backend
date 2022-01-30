@@ -95,7 +95,6 @@ exports.structure = async function (group) {
   let [members, fields] = await db.query(query, [group.id]);
   // Don't use findAllTeams to avoid recursion
   let [teams, f] = await db.query(teamsQuery, [group.id]);
-  debugger;
   return {
     id: group.id,
     name: group.name,
