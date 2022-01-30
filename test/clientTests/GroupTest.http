@@ -20,8 +20,8 @@ GET http://localhost:8000/groups/12
 Content-Type: application/json
 
 ###
-# Invite and add user to group
 
+# Invite and add user to group
 GET http://localhost:8000/groups/invitation/lXWn7
 Content-Type: application/json
 
