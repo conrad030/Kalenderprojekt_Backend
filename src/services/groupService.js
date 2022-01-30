@@ -76,6 +76,23 @@ exports.create = async function (name, password, colorCode, userId) {
  * Get all groups
  * @returns Array - All groups
  */
+exports.findAll = async function () {
+  let query = `SELECT * FROM SmartCalendar.Group`;
+  try {
+    let [groups, fields] = await db.query(query);
+    const structuredGroups = groups.map(async (group) => {
+      let g = await this.structure(group);
+      return g;
+    });
+    return Promise.all(structuredGroups).then((value) => {
+      return value;
+    });
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
+    throw new ServiceError("Internal Service Error", 500);
+  }
+};
+
 exports.findAllTeams = async function (groupId) {
   let query = `SELECT * FROM SmartCalendar.Team WHERE groupId = ?`;
   try {

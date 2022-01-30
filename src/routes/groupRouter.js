@@ -7,7 +7,7 @@ const middleware = require("../middleware/Middleware");
 router.post("/create", middleware.checkAuthentication, controller.create);
 
 // Get all Groups
-router.get("/", middleware.checkAuthentication, controller.findAllTeams);
+router.get("/", middleware.checkAuthentication, controller.findAll);
 
 // Get Group
 router.get("/:id", middleware.checkAuthentication, controller.findOne);
