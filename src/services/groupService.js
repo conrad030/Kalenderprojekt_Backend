@@ -80,8 +80,8 @@ exports.findAllTeams = async function (groupId) {
   let query = `SELECT * FROM SmartCalendar.Team WHERE groupId = ?`;
   try {
     if (!groupId) throw new ServiceError("Invalid data", 400);
+    await this.findOne(groupId);
     let [teams, fields] = await db.query(query, [groupId]);
-    if (teams.length === 0) throw new ServiceError("Not found", 404);
     return teams;
   } catch (e) {
     if (e instanceof ServiceError) throw e;
