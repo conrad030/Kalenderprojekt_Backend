@@ -1,22 +1,22 @@
 # Create group
-POST http://localhost:8080/groups/create
+POST http://localhost:8000/groups/create
 Content-Type: application/json
 
 {
-  "name": "Test Group",
+  "name": "Test Group Very New",
   "colorCode": "DDDDDD"
 }
 
 ###
 
-# Get all groups
-GET http://localhost:8000/groups/ 
+# Get all teams for group
+GET http://localhost:8000/groups/teams/16
 Content-Type: application/json
 
 ###
 
 # Get specific group
-GET http://localhost:8000/groups/102
+GET http://localhost:8000/groups/12
 Content-Type: application/json
 
 ###

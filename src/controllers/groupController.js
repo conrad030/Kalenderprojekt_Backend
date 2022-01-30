@@ -11,9 +11,9 @@ exports.create = async (req, res) => {
   }
 };
 
-exports.findAll = async (req, res) => {
+exports.findAllTeams = async (req, res) => {
   try {
-    let allGroups = await groupService.findAll();
+    let allGroups = await groupService.findAllTeams(req.params.id);
     res.status(200).json(allGroups);
   } catch (error) {
     res.status(error.statusCode).json({ message: error.message });

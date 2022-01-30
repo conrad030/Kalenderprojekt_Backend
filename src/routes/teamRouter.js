@@ -20,7 +20,7 @@ router.delete(
   controller.delMember
 );
 
-// Get all Teams
+// Get all Teams for User
 router.get("/", middleware.checkAuthentication, controller.findAll);
 
 // Get one Team
