@@ -33,6 +33,8 @@ exports.create = async function (req, res) {
     maxOccurences,
   } = req.body;
   try {
+    console.log("User ID:", req.session.userId);
+    console.log("Group ID:", groupId);
     if (!(await groupService.isGroupMember(req.session.userId, groupId)))
       return res.status(403).json({ message: "User is no member of group" });
     let newAppointment = await appointmentService.createAppointment(
