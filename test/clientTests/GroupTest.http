@@ -32,13 +32,13 @@ Content-Type: application/json
 ###
 
 # Update group
-PUT http://localhost:8000/groups/13
+PUT http://localhost:8000/groups/22
 Content-Type: application/json
 
 {
   "name": "changedGroup",
-  "password": "changedPassword",
-  "colorCode" : "FAFAFA"
+  "colorCode" : "FAFAFA",
+  "password": "password"
 }
 
 ###
