@@ -37,8 +37,8 @@ Content-Type: application/json
 
 {
   "name": "changedGroup",
-  "password": "changedPassword",
-  "colorCode" : "FAFAFA"
+  "colorCode" : "FAFAFA",
+  "password": "password"
 }
 
 ###

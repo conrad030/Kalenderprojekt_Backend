@@ -29,6 +29,15 @@ exports.findAllTeams = async (req, res) => {
   }
 };
 
+exports.findAll = async (req, res) => {
+  try {
+    let allGroups = await groupService.findAll(req.params.id);
+    res.status(200).json(allGroups);
+  } catch (error) {
+    res.status(error.statusCode).json({ message: error.message });
+  }
+};
+
 exports.findOne = async (req, res) => {
   let { id } = req.params;
   try {
