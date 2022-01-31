@@ -73,8 +73,8 @@ exports.create = async function (name, password, colorCode, userId) {
 };
 
 /**
- * Get all groups
- * @returns Array - All groups
+ * Get all teams of groups
+ * @returns Array - All teams of group
  */
 exports.findAll = async function () {
   let query = `SELECT * FROM SmartCalendar.Group`;
@@ -100,6 +100,21 @@ exports.findAllTeams = async function (groupId) {
     await this.findOne(groupId);
     let [teams, fields] = await db.query(query, [groupId]);
     return teams;
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
+    throw new ServiceError("Internal Service Error", 500);
+  }
+};
+
+/**
+ * Get all groups
+ * @returns Array - All groups
+ */
+exports.findAll = async function (groupId) {
+  let query = `SELECT * FROM SmartCalendar.Group`;
+  try {
+    let [groups, fields] = await db.query(query, [groupId]);
+    return groups;
   } catch (e) {
     if (e instanceof ServiceError) throw e;
     throw new ServiceError("Internal Service Error", 500);
@@ -148,29 +163,76 @@ exports.findOne = async function (id) {
   return result;
 };
 
+exports.updateName = async function (id, name) {
+  if (!id || !name) throw new ServiceError("Invalid data", 400);
+
+  let query = `UPDATE SmartCalendar.Group SET 
+  name = ?
+  WHERE id = ?;`;
+
+  try {
+    await db.query(query, [name, id]);
+    let group = await this.findOne(id);
+    return group;
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
+    throw new ServiceError("Internal Service Error", 500);
+  }
+};
+
+exports.updatePassword = async function (id, password) {
+  if (!id || !password) throw new ServiceError("Invalid data", 400);
+  let hash = await bcrypt.hash(password, 5);
+
+  let query = `UPDATE SmartCalendar.Group SET 
+  password = ?
+  WHERE id = ?;`;
+
+  try {
+    await db.query(query, [hash, id]);
+    let group = await this.findOne(id);
+    return group;
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
+    throw new ServiceError("Internal Service Error", 500);
+  }
+};
+
+exports.updateColor = async function (id, colorCode) {
+  if (!id || !colorCode) throw new ServiceError("Invalid data", 400);
+
+  let query = `UPDATE SmartCalendar.Group SET 
+  colorCode = ?
+  WHERE id = ?;`;
+
+  try {
+    await db.query(query, [colorCode, id]);
+    let group = await this.findOne(id);
+    return group;
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
+    throw new ServiceError("Internal Service Error", 500);
+  }
+};
+
 /**
  * Update one group
  * @param {number} id
  * @param {string} name
  * @param {string} password
  * @param {string} colorCode
- * TODO make parameters optional
  * @returns group
  */
 exports.update = async function (id, name, password, colorCode, userId) {
-  if (!id || !name || !password || !colorCode)
-    throw new ServiceError("Invalid data", 400);
-  let hash = await bcrypt.hash(password, 5);
-
-  let query = `UPDATE SmartCalendar.Group SET 
-  name = ?,
-  password = ?,
-  colorCode = ?
-  WHERE id = ?;`;
+  if (!id || (!name && !password && !colorCode))
+    throw new ServiceError("Invalid Data", 400);
 
   try {
+    await this.findOne(id);
     await isGroupAdmin(id, userId);
-    await db.query(query, [name, hash, colorCode, id]);
+    if (name) await this.updateName(id, name);
+    if (password) await this.updatePassword(id, password);
+    if (colorCode) await this.updateColor(id, colorCode);
     let group = await this.findOne(id);
     let result = await this.structure(group);
     return result;

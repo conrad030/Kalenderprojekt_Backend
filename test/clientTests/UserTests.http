@@ -13,7 +13,7 @@ Content-Type: application/json
 //d3Jvbmc6d3Jvbmc= wrong data
 //YWRtaW46YWRtaW4xMjM= admin
 POST http://localhost:8000/users/login
-Authorization: Bearer dGVzdDphYmM=
+Authorization: Bearer YWRtaW46YWRtaW4xMjM=
 
 
 ###
@@ -26,13 +26,11 @@ GET http://localhost:8000/users/1
 GET http://localhost:8000/users/groups/
 
 ###
-PUT http://localhost:8000/users/1127534
+PUT http://localhost:8000/users/1
 Content-Type: application/json
 
 {
-    "username": "changedUsername",
-    "password": "changedPassword",
-    "email": "changed@gmail.com"
+    "username": "name"
 }
 
 ###
