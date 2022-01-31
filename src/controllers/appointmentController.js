@@ -15,6 +15,7 @@ exports.getAppointmentsForUser = async function (req, res) {
     );
     res.status(200).json(appointments);
   } catch (error) {
+    console.log("Fehler:", error);
     res.status(error.statusCode).json({ message: error.message });
   }
 };
