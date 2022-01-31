@@ -113,30 +113,76 @@ exports.findGroupsForUser = async function (userId) {
     return groups;
   } catch (error) {
     console.log(error);
-    throw new serviceerror("internal server error", 500);
+    throw new ServiceError("Internal Server Error", 500);
+  }
+};
+
+exports.updateUsername = async function (id, username) {
+  if (!id || !username) throw new ServiceError("Invalid data", 400);
+
+  let query = `UPDATE SmartCalendar.User SET 
+  username = ?
+  WHERE id = ?;`;
+
+  try {
+    await db.query(query, [username, id]);
+    let user = await this.findOne(id);
+    return user;
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
+    throw new ServiceError("Internal Service Error", 500);
+  }
+};
+
+exports.updatePassword = async function (id, password) {
+  if (!id || !password) throw new ServiceError("Invalid data", 400);
+  let hash = await bcrypt.hash(password, 5);
+
+  let query = `UPDATE SmartCalendar.User SET 
+  password = ?
+  WHERE id = ?;`;
+
+  try {
+    await db.query(query, [hash, id]);
+    let user = await this.findOne(id);
+    return user;
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
+    throw new ServiceError("Internal Service Error", 500);
+  }
+};
+
+exports.updateEmail = async function (id, email) {
+  if (!id || !email) throw new ServiceError("Invalid data", 400);
+
+  let query = `UPDATE SmartCalendar.User SET 
+  email = ?
+  WHERE id = ?;`;
+
+  try {
+    await db.query(query, [email, id]);
+    let user = await this.findOne(id);
+    return user;
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
+    throw new ServiceError("Internal Service Error", 500);
   }
 };
 
 exports.updateUser = async function (id, username, email, password) {
-  {
-    if (!id || !username || !email || !password)
-      throw new ServiceError("Invalid data", 400);
-    let hash = await bcrypt.hash(password, 5);
+  if (!id || (!username && !email && !password))
+    throw new ServiceError("Invalid data", 400);
 
-    let query = `UPDATE SmartCalendar.User SET 
-  username = ?,
-  email = ?,
-  password = ?
-  WHERE id = ?;`;
-
-    try {
-      await db.query(query, [username, email, hash, id]);
-      let user = await this.findOne(id);
-      return user;
-    } catch (e) {
-      if (e instanceof ServiceError) throw e;
-      throw new ServiceError("Internal Service Error", 500);
-    }
+  try {
+    await this.findOne(id);
+    if (username) await this.updateUsername(id, username);
+    if (email) await this.updateEmail(id, email);
+    if (password) await this.updatePassword(id, password);
+    let user = await this.findOne(id);
+    return user;
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
+    throw new ServiceError("Internal Service Error", 500);
   }
 };
 
