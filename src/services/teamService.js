@@ -40,9 +40,10 @@ exports.addMember = async function (teamId, userId) {
   let findQuery = `SELECT * FROM SmartCalendar.User_Team WHERE id = ?;`;
   try {
     let results = await db.query(insertQuery, [teamId, userId]);
-    let newMember = await db.query(findQuery, [results[0].insertId]);
+    let [newMember, _] = await db.query(findQuery, [results[0].insertId]);
     return newMember;
   } catch (e) {
+    let { teamId, userId } = req.query;
     if (e instanceof ServiceError) throw e;
     throw new ServiceError("Internal Service Error", 500);
   }
@@ -129,4 +130,18 @@ exports.delete = async function (id) {
   }
 
   return team;
+};
+
+exports.getMembers = async function (teamId) {
+  let query = `
+  SELECT user.id, user.username, user.email
+  FROM SmartCalendar.User user, SmartCalendar.User_Team member
+  WHERE user.id = member.userId
+  AND member.teamId = ?;`;
+  try {
+    let [users, _] = await db.query(query, [teamId]);
+    return users;
+  } catch (error) {
+    throw new ServiceError("Internal server error", 500);
+  }
 };
