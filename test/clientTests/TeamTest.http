@@ -3,7 +3,7 @@ POST http://localhost:8000/teams
 Content-Type: application/json
 
 {
-  "groupId": 1,
+  "groupId": 25,
   "name": "Very New Team 3",
   "colorCode": "FFFFFF"
 }
@@ -17,18 +17,26 @@ Content-Type: application/json
 ###
 
 # Get one team
-GET http://localhost:8000/teams/9
+GET http://localhost:8000/teams/12
 Content-Type: application/json
 
 ###
 
+# Add member
+POST http://localhost:8000/teams/member?teamId=29&userId=2
+
+###
+
+# Remove member
+
+###
+
 # Update team
-PUT http://localhost:8000/teams/9
+PUT http://localhost:8000/teams/12
 Content-Type: application/json
 
 {
-  "groupId": 1231239,
-  "name": "Changed Team Name 2",
+  "name": "changedTeamName",
   "colorCode": "FFFFFF"
 }
 ###

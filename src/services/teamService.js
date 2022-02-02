@@ -29,6 +29,7 @@ exports.createTeam = async function (groupId, name, colorCode) {
  * Add a user to a team
  * @param {number} teamId
  * @param {number} userId
+ * TODO: Check if user already exists in team
  */
 exports.addMember = async function (teamId, userId) {
   if (!userId || !teamId) throw new ServiceError("Invalid data", 400);
@@ -88,6 +89,38 @@ exports.findOne = async function (id) {
   return teams[0];
 };
 
+exports.updateName = async function (id, name) {
+  if (!id || !name) throw new ServiceError("Invalid data", 400);
+
+  let query = `UPDATE SmartCalendar.Team SET 
+  name = ?
+  WHERE id = ?;`;
+  try {
+    await db.query(query, [name, id]);
+    let updatedTeam = await this.findOne(id);
+    return updatedTeam;
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
+    throw new ServiceError("Internal Service Error", 500);
+  }
+};
+
+exports.updateColor = async function (id, colorCode) {
+  if (!id || !colorCode) throw new ServiceError("Invalid data", 400);
+
+  let query = `UPDATE SmartCalendar.Team SET 
+  colorCode = ?
+  WHERE id = ?;`;
+  try {
+    await db.query(query, [colorCode, id]);
+    let updatedTeam = await this.findOne(id);
+    return updatedTeam;
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
+    throw new ServiceError("Internal Service Error", 500);
+  }
+};
+
 /**
  * Update one teams information
  * @param {number} id
@@ -96,14 +129,12 @@ exports.findOne = async function (id) {
  * @returns updated team
  */
 exports.update = async function (id, name, colorCode) {
-  if (!id || !name || !colorCode) throw new ServiceError("Invalid data", 400);
+  if (!id || (!name && !colorCode)) throw new ServiceError("Invalid data", 400);
 
-  let query = `UPDATE SmartCalendar.Team SET 
-  name = ?,
-  colorCode = ?
-  WHERE id = ?;`;
   try {
-    await db.query(query, [name, colorCode, id]);
+    await this.findOne(id);
+    if (name) await this.updateName(id, name);
+    if (colorCode) await this.updateColor(id, colorCode);
     let updatedTeam = await this.findOne(id);
     return updatedTeam;
   } catch (e) {

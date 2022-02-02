@@ -2,6 +2,7 @@ const { log, group: newGroup } = require("console");
 const db = require("../database/Database").initDb();
 const { ServiceError } = require("../errors");
 const bcrypt = require("bcrypt");
+const teamService = require("./teamService");
 
 /**
  * Generate a 5 char long invite code
@@ -126,14 +127,20 @@ exports.structure = async function (group) {
   let teamsQuery = `SELECT * FROM SmartCalendar.Team WHERE groupId = ?`;
   let [members, fields] = await db.query(query, [group.id]);
   // Don't use findAllTeams to avoid recursion
-  let [teams, f] = await db.query(teamsQuery, [group.id]);
+  let [t, f] = await db.query(teamsQuery, [group.id]);
+  let teamsPromise = t.map(async (team) => {
+    let members = await teamService.getMembers(team.id);
+    team.members = members;
+    return team;
+  });
+  let resolvedTeams = await Promise.all(teamsPromise);
   return {
     id: group.id,
     name: group.name,
     createdAt: group.createdAt,
     invitationCode: group.invitationCode,
     colorCode: group.colorCode,
-    teams,
+    teams: resolvedTeams,
     members,
   };
 };
