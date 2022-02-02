@@ -10,7 +10,8 @@ exports.getAppointmentsForUser = async function (userId, inFuture) {
   WHERE appointment.id = member.appointmentId
   AND member.acceptedInvitation = true
   AND member.userId = ?
-  ${inFuture ? "AND appointment.startDate >= ?" : ""};
+  ${inFuture ? "AND appointment.startDate >= ?" : ""}
+  ORDER BY appointment.startDate, appointment.startTime;
   `;
   console.log(query);
   try {
