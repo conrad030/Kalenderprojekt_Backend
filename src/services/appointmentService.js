@@ -14,7 +14,8 @@ exports.getAppointmentsForUser = async function (
   WHERE appointment.id = member.appointmentId
   AND member.acceptedInvitation = ?
   AND member.userId = ?
-  ${inFuture ? "AND appointment.startDate >= ?" : ""};
+  ${inFuture ? "AND appointment.startDate >= ?" : ""}
+  ORDER BY appointment.startDate, appointment.startTime;
   `;
   console.log(query);
   try {
@@ -47,6 +48,7 @@ exports.createAppointment = async function (
   maxOccurences,
   userId
 ) {
+  console.log("User ID:", userId);
   if (!(await groupService.findOne(groupId)))
     throw new ServiceError("Group not found", 404);
 
@@ -71,7 +73,9 @@ exports.createAppointment = async function (
     `;
     try {
       let results = await db.query(appointmentQuery, argumentsArray);
+      console.log("Result is here. insertId:", results[0].insertId);
       var newAppointment = await this.findOne(results[0].insertId);
+      console.log("Found the appointment. Appointment:", newAppointment);
       newAppointment = await this.addMember(
         newAppointment.id,
         userId,
@@ -79,6 +83,7 @@ exports.createAppointment = async function (
         true,
         true
       );
+      console.log("added member.");
       newAppointment.exceptions = [];
       newAppointment.files = [];
       return newAppointment;

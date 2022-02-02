@@ -14,13 +14,13 @@ GET http://localhost:8000/groups/
 ###
 
 # Get all teams for group
-GET http://localhost:8000/groups/teams/17
+GET http://localhost:8000/groups/teams/1
 Content-Type: application/json
 
 ###
 
 # Get specific group
-GET http://localhost:8000/groups/18
+GET http://localhost:8000/groups/1
 Content-Type: application/json
 
 ###
@@ -32,7 +32,7 @@ Content-Type: application/json
 ###
 
 # Update group
-PUT http://localhost:8000/groups/22
+PUT http://localhost:8000/groups/1
 Content-Type: application/json
 
 {
