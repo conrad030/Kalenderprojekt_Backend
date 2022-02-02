@@ -19,6 +19,19 @@ exports.getAppointmentsForUser = async function (req, res) {
   }
 };
 
+exports.getAppointmentsForUserInvPending = async function (req, res) {
+  try {
+    let appointments = await appointmentService.getAppointmentsForUser(
+      req.session.userId,
+      true,
+      false
+    );
+    res.status(200).json(appointments);
+  } catch (error) {
+    res.status(error.statusCode).json({ message: error.message });
+  }
+};
+
 exports.create = async function (req, res) {
   let {
     groupId,
