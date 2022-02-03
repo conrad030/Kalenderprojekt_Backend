@@ -61,7 +61,8 @@ exports.removeMember = async function (teamId, userId) {
 
   let removeQuery = `DELETE FROM SmartCalendar.User_Team WHERE teamId = ? AND userId = ?;`;
   try {
-    await this.isTeamMember(userId, teamId);
+    if (!(await this.isTeamMember(userId, teamId)))
+      throw new ServiceError("Not found", 404);
     await db.query(removeQuery, [teamId, userId]);
   } catch (e) {
     if (e instanceof ServiceError) throw e;
