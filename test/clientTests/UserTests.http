@@ -2,8 +2,8 @@ POST http://localhost:8000/users/signup
 Content-Type: application/json
 
 {
-    "username": "test",
-    "email": "test@user.com",
+    "username": "yakup",
+    "email": "yakup@user.com",
     "password": "abc"
 }
 
@@ -13,7 +13,7 @@ Content-Type: application/json
 //d3Jvbmc6d3Jvbmc= wrong data
 //YWRtaW46YWRtaW4xMjM= admin
 POST http://localhost:8000/users/login
-Authorization: Bearer YWRtaW46YWRtaW4xMjM=
+Authorization: Bearer eWFrdXA6YWJj
 
 
 ###

@@ -40,10 +40,10 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:8080/appointments/member?appointmentId=3&userId=2
+POST http://localhost:8000/appointments/member?appointmentId=3&userId=2
 
 ###
-DELETE http://localhost:8080/appointments/member?appointmentId=3&userId=2
+DELETE http://localhost:8000/appointments/member?appointmentId=3&userId=2
 
 ###
 POST http://localhost:8080/appointments/member/acceptInvitation/3
