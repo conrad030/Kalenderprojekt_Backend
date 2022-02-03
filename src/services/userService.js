@@ -79,7 +79,7 @@ exports.findOne = async function (id) {
     return users[0];
   } catch (e) {
     if (e instanceof ServiceError) throw e;
-    throw new ServiceError("Internal Service Error", 500);
+    throw new ServiceError("Internal Server Error", 500);
   }
 };
 
@@ -139,7 +139,7 @@ exports.updateUsername = async function (id, username) {
     return user;
   } catch (e) {
     if (e instanceof ServiceError) throw e;
-    throw new ServiceError("Internal Service Error", 500);
+    throw new ServiceError("Internal Server Error", 500);
   }
 };
 
@@ -157,7 +157,7 @@ exports.updatePassword = async function (id, password) {
     return user;
   } catch (e) {
     if (e instanceof ServiceError) throw e;
-    throw new ServiceError("Internal Service Error", 500);
+    throw new ServiceError("Internal Server Error", 500);
   }
 };
 
@@ -174,7 +174,7 @@ exports.updateEmail = async function (id, email) {
     return user;
   } catch (e) {
     if (e instanceof ServiceError) throw e;
-    throw new ServiceError("Internal Service Error", 500);
+    throw new ServiceError("Internal Server Error", 500);
   }
 };
 
@@ -191,7 +191,7 @@ exports.updateUser = async function (id, username, email, password) {
     return user;
   } catch (e) {
     if (e instanceof ServiceError) throw e;
-    throw new ServiceError("Internal Service Error", 500);
+    throw new ServiceError("Internal Server Error", 500);
   }
 };
 

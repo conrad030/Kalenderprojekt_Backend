@@ -3,7 +3,7 @@ POST http://localhost:8000/groups/create
 Content-Type: application/json
 
 {
-  "name": "Test Group Very New",
+  "name": "Group for Team Test",
   "colorCode": "DDDDDD"
 }
 
@@ -20,7 +20,7 @@ Content-Type: application/json
 ###
 
 # Get specific group
-GET http://localhost:8000/groups/1
+GET http://localhost:8000/groups/27
 Content-Type: application/json
 
 ###
@@ -44,5 +44,5 @@ Content-Type: application/json
 ###
 
 # Delete group
-DELETE http://localhost:8000/groups/109
+DELETE http://localhost:8000/groups/26
 Content-Type: application/json

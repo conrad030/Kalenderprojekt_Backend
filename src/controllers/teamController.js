@@ -11,9 +11,6 @@ exports.create = async (req, res) => {
   }
 };
 
-/**
- * TODO: Query in url instead of sending in body
- */
 exports.addMember = async (req, res) => {
   let { teamId, userId } = req.query;
 
@@ -26,15 +23,12 @@ exports.addMember = async (req, res) => {
   }
 };
 
-/**
- * TODO: Query in url instead of sending in body
- */
 exports.delMember = async (req, res) => {
   let { teamId, userId } = req.query;
 
   try {
-    let deletedMember = await teamService.delMember(teamId, userId);
-    res.status(201).json(deletedMember);
+    let deletedMember = await teamService.removeMember(teamId, userId);
+    res.status(200).json({ message: "Deleted team member" });
   } catch (error) {
     console.error(error.message);
     res.status(error.statusCode).json({ message: error.message });
