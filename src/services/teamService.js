@@ -40,11 +40,12 @@ exports.addMember = async function (teamId, userId) {
   VALUES (?, ?)`;
   let findQuery = `SELECT * FROM SmartCalendar.User_Team WHERE id = ?;`;
   try {
+    if (await this.isTeamMember(userId, teamId))
+      throw new ServiceError("Already member of team", 409);
     let results = await db.query(insertQuery, [teamId, userId]);
     let [newMember, _] = await db.query(findQuery, [results[0].insertId]);
     return newMember;
   } catch (e) {
-    let { teamId, userId } = req.query;
     if (e instanceof ServiceError) throw e;
     throw new ServiceError("Internal Service Error", 500);
   }
@@ -175,4 +176,27 @@ exports.getMembers = async function (teamId) {
   } catch (error) {
     throw new ServiceError("Internal server error", 500);
   }
+};
+
+const findMember = async function (userId, teamId) {
+  if (!teamId || !userId) throw new Error("Missing arguments");
+  let query = `
+  SELECT * FROM SmartCalendar.User_Team
+  WHERE userId = ?
+  AND teamId = ?;`;
+
+  try {
+    let [members, _] = await db.query(query, [userId, teamId]);
+    //No members found
+    if (members.length === 0) return null;
+    return members[0];
+  } catch (e) {
+    if (e instanceof ServiceError) throw e;
+    throw new ServiceError("Internal Service Error", 500);
+  }
+};
+
+exports.isTeamMember = async function (userId, teamId) {
+  let member = await findMember(userId, teamId);
+  return (await findMember(userId, teamId)) !== null;
 };
