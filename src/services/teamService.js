@@ -1,6 +1,7 @@
 const db = require("../database/Database").initDb();
 const { ServiceError } = require("../errors");
 const groupService = require("./groupService");
+const userService = require("./userService");
 
 /**
  * Create a team
@@ -21,7 +22,7 @@ exports.createTeam = async function (groupId, name, colorCode) {
     return newTeam;
   } catch (e) {
     if (e instanceof ServiceError) throw e;
-    throw new ServiceError("Internal Service Error", 500);
+    throw new ServiceError("Internal Server Error", 500);
   }
 };
 
@@ -32,12 +33,15 @@ exports.createTeam = async function (groupId, name, colorCode) {
  */
 exports.addMember = async function (teamId, userId) {
   if (!userId || !teamId) throw new ServiceError("Invalid data", 400);
-  var team = await this.findOne(teamId);
-  if (!team) throw new ServiceError("Not found", 404);
 
   let insertQuery = `INSERT INTO SmartCalendar.User_Team (teamId, userId)
   VALUES (?, ?)`;
   try {
+    // Does team exist?
+    await this.findOne(teamId);
+    // Does user exist?
+    await userService.findOne(userId);
+    // Is user team member?
     if (await this.isTeamMember(userId, teamId))
       throw new ServiceError("Already member of team", 409);
     await db.query(insertQuery, [teamId, userId]);
@@ -45,7 +49,7 @@ exports.addMember = async function (teamId, userId) {
     return newMember;
   } catch (e) {
     if (e instanceof ServiceError) throw e;
-    throw new ServiceError("Internal Service Error", 500);
+    throw new ServiceError("Internal Server Error", 500);
   }
 };
 
@@ -56,17 +60,20 @@ exports.addMember = async function (teamId, userId) {
  */
 exports.removeMember = async function (teamId, userId) {
   if (!userId || !teamId) throw new ServiceError("Invalid data", 400);
-  var team = await this.findOne(teamId);
-  if (!team) throw new ServiceError("Not found", 404);
 
   let removeQuery = `DELETE FROM SmartCalendar.User_Team WHERE teamId = ? AND userId = ?;`;
   try {
+    // Does team exist?
+    await this.findOne(teamId);
+    // Does user exist?
+    await userService.findOne(userId);
+    // Is user team member?
     if (!(await this.isTeamMember(userId, teamId)))
       throw new ServiceError("Not found", 404);
     await db.query(removeQuery, [teamId, userId]);
   } catch (e) {
     if (e instanceof ServiceError) throw e;
-    throw new ServiceError("Internal Service Error", 500);
+    throw new ServiceError("Internal Server Error", 500);
   }
 };
 
@@ -81,7 +88,7 @@ exports.findAll = async function () {
     return allTeams;
   } catch (e) {
     if (e instanceof ServiceError) throw e;
-    throw new ServiceError("Internal Service Error", 500);
+    throw new ServiceError("Internal Server Error", 500);
   }
 };
 
@@ -100,10 +107,11 @@ exports.findOne = async function (id) {
     let results = await db.query(query, [id]);
     let members = await this.getMembers(id);
     teams = results[0];
+    if (teams.length === 0) throw new ServiceError("Not found", 404);
     teams[0].members = members;
   } catch (e) {
     if (e instanceof ServiceError) throw e;
-    throw new ServiceError("Internal Service Error", 500);
+    throw new ServiceError("Internal Server Error", 500);
   }
   //No team found
   if (teams.length === 0) throw new ServiceError("Not found", 404);
@@ -122,7 +130,7 @@ exports.updateName = async function (id, name) {
     return updatedTeam;
   } catch (e) {
     if (e instanceof ServiceError) throw e;
-    throw new ServiceError("Internal Service Error", 500);
+    throw new ServiceError("Internal Server Error", 500);
   }
 };
 
@@ -138,7 +146,7 @@ exports.updateColor = async function (id, colorCode) {
     return updatedTeam;
   } catch (e) {
     if (e instanceof ServiceError) throw e;
-    throw new ServiceError("Internal Service Error", 500);
+    throw new ServiceError("Internal Server Error", 500);
   }
 };
 
@@ -160,7 +168,7 @@ exports.update = async function (id, name, colorCode) {
     return updatedTeam;
   } catch (e) {
     if (e instanceof ServiceError) throw e;
-    throw new ServiceError("Internal Service Error", 500);
+    throw new ServiceError("Internal Server Error", 500);
   }
 };
 
@@ -178,7 +186,7 @@ exports.delete = async function (id) {
     await db.query(deleteQuery, [id]);
   } catch (e) {
     if (e instanceof ServiceError) throw e;
-    throw new ServiceError("Internal Service Error", 500);
+    throw new ServiceError("Internal Server Error", 500);
   }
 
   return team;
@@ -212,7 +220,7 @@ exports.findMember = async function (userId, teamId) {
     return members[0];
   } catch (e) {
     if (e instanceof ServiceError) throw e;
-    throw new ServiceError("Internal Service Error", 500);
+    throw new ServiceError("Internal Server Error", 500);
   }
 };
 

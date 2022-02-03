@@ -23,7 +23,7 @@ async function genInvCode(length) {
     if (!invCodeResult.length == 0) genInvCode(length);
   } catch (e) {
     if (e instanceof ServiceError) throw e;
-    throw new ServiceError("Internal Service Error", 500);
+    throw new ServiceError("Internal Server Error", 500);
   }
 
   return result;
@@ -69,7 +69,7 @@ exports.create = async function (name, password, colorCode, userId) {
   } catch (e) {
     console.log(e);
     if (e instanceof ServiceError) throw e;
-    throw new ServiceError("Internal Service Error", 500);
+    throw new ServiceError("Internal Server Error", 500);
   }
 };
 
@@ -90,7 +90,7 @@ exports.findAll = async function () {
     });
   } catch (e) {
     if (e instanceof ServiceError) throw e;
-    throw new ServiceError("Internal Service Error", 500);
+    throw new ServiceError("Internal Server Error", 500);
   }
 };
 
@@ -103,7 +103,7 @@ exports.findAllTeams = async function (groupId) {
     return teams;
   } catch (e) {
     if (e instanceof ServiceError) throw e;
-    throw new ServiceError("Internal Service Error", 500);
+    throw new ServiceError("Internal Server Error", 500);
   }
 };
 
@@ -118,7 +118,7 @@ exports.findAll = async function (groupId) {
     return groups;
   } catch (e) {
     if (e instanceof ServiceError) throw e;
-    throw new ServiceError("Internal Service Error", 500);
+    throw new ServiceError("Internal Server Error", 500);
   }
 };
 
@@ -161,7 +161,7 @@ exports.findOne = async function (id) {
     groups = results[0];
   } catch (e) {
     if (e instanceof ServiceError) throw e;
-    throw new ServiceError("Internal Service Error", 500);
+    throw new ServiceError("Internal Server Error", 500);
   }
 
   //No groups found
@@ -183,7 +183,7 @@ exports.updateName = async function (id, name) {
     return group;
   } catch (e) {
     if (e instanceof ServiceError) throw e;
-    throw new ServiceError("Internal Service Error", 500);
+    throw new ServiceError("Internal Server Error", 500);
   }
 };
 
@@ -201,7 +201,7 @@ exports.updatePassword = async function (id, password) {
     return group;
   } catch (e) {
     if (e instanceof ServiceError) throw e;
-    throw new ServiceError("Internal Service Error", 500);
+    throw new ServiceError("Internal Server Error", 500);
   }
 };
 
@@ -218,7 +218,7 @@ exports.updateColor = async function (id, colorCode) {
     return group;
   } catch (e) {
     if (e instanceof ServiceError) throw e;
-    throw new ServiceError("Internal Service Error", 500);
+    throw new ServiceError("Internal Server Error", 500);
   }
 };
 
@@ -245,7 +245,7 @@ exports.update = async function (id, name, password, colorCode, userId) {
     return result;
   } catch (e) {
     if (e instanceof ServiceError) throw e;
-    throw new ServiceError("Internal Service Error", 500);
+    throw new ServiceError("Internal Server Error", 500);
   }
 };
 
@@ -269,7 +269,7 @@ exports.delete = async function (id, userId) {
     return result;
   } catch (e) {
     if (e instanceof ServiceError) throw e;
-    throw new ServiceError("Internal Service Error", 500);
+    throw new ServiceError("Internal Server Error", 500);
   }
 };
 /**
@@ -289,7 +289,7 @@ async function isGroupAdmin(groupId, userId) {
       throw new ServiceError("Forbidden, not group admin", 403);
   } catch (e) {
     if (e instanceof ServiceError) throw e;
-    throw new ServiceError("Internal Service Error", 500);
+    throw new ServiceError("Internal Server Error", 500);
   }
   return true;
 }
@@ -317,7 +317,7 @@ exports.joinGroup = async function (invCode, userId) {
     await db.query(query, [group[0].id, userId, false]);
   } catch (e) {
     if (e instanceof ServiceError) throw e;
-    throw new ServiceError("Internal Service Error", 500);
+    throw new ServiceError("Internal Server Error", 500);
   }
 };
 
@@ -336,7 +336,7 @@ const findMemberOfGroup = async function (userId, groupId) {
     return members[0];
   } catch (e) {
     if (e instanceof ServiceError) throw e;
-    throw new ServiceError("Internal Service Error", 500);
+    throw new ServiceError("Internal Server Error", 500);
   }
 };
 

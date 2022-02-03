@@ -23,12 +23,12 @@ Content-Type: application/json
 ###
 
 # Add member
-POST http://localhost:8000/teams/member?teamId=33&userId=2
+POST http://localhost:8000/teams/member?teamId=32&userId=2
 
 ###
 
 # Remove member
-DELETE  http://localhost:8000/teams/member?teamId=33&userId=2
+DELETE  http://localhost:8000/teams/member?teamId=32&userId=2
 ###
 
 # Update team
