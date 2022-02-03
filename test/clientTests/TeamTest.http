@@ -23,7 +23,7 @@ Content-Type: application/json
 ###
 
 # Add member
-POST http://localhost:8000/teams/member?teamId=29&userId=2
+POST http://localhost:8000/teams/member?teamId=30&userId=2
 
 ###
 

@@ -14,7 +14,6 @@ router.get(
 router.post("/", middleware.checkAuthentication, controller.create);
 
 // Get all Appointments for group
-//TODO: Nur wenn man Mitglied in der Gruppe ist
 router.get("/groups/:id", middleware.checkAuthentication, controller.findAll);
 
 //Get specific appointment
