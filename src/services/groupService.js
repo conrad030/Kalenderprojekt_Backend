@@ -303,18 +303,20 @@ async function isGroupAdmin(groupId, userId) {
  */
 exports.joinGroup = async function (invCode, userId) {
   if (!invCode || !userId) throw new ServiceError("Invalid data", 400);
-  let checkQuery = `SELECT * FROM SmartCalendar.Group_Member WHERE userId = ?`;
-  let [member, memberFields] = await db.query(checkQuery, [userId]);
-  if (!member.length == 0) throw new ServiceError("User already exists", 400);
-
+  let checkQuery = `SELECT * FROM SmartCalendar.Group_Member WHERE userId = ? AND groupId = ?`;
   let query = `INSERT INTO SmartCalendar.Group_Member (groupId, userId, isAdmin)
   VALUES (?, ?, ?)`;
-
   let groupQuery = `SELECT * FROM SmartCalendar.Group 
   WHERE invitationCode = ?`;
-  let [group, fields] = await db.query(groupQuery, [invCode]);
 
   try {
+    let [group, fields] = await db.query(groupQuery, [invCode]);
+    if (group.length == 0) throw new ServiceError("Not found", 404);
+    let [member, memberFields] = await db.query(checkQuery, [
+      userId,
+      group[0].id,
+    ]);
+    if (!member.length == 0) throw new ServiceError("User already exists", 400);
     await db.query(query, [group[0].id, userId, false]);
   } catch (e) {
     if (e instanceof ServiceError) throw e;
