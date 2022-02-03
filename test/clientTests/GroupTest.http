@@ -8,8 +8,8 @@ Content-Type: application/json
 }
 
 ###
-
-GET http://localhost:8000/groups/
+# Get Group
+GET http://localhost:8000/groups/19
 
 ###
 
@@ -26,11 +26,10 @@ Content-Type: application/json
 ###
 
 # Invite and add user to group
-GET http://localhost:8000/groups/invitation/lXWn7
+GET http://localhost:8000/groups/invitation/YMuV4
 Content-Type: application/json
 
 ###
-
 # Update group
 PUT http://localhost:8000/groups/1
 Content-Type: application/json

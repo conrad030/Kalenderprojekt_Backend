@@ -94,6 +94,7 @@ exports.findAll = async function () {
   }
 };
 
+// TODO: Should also return members
 exports.findAllTeams = async function (groupId) {
   let query = `SELECT * FROM SmartCalendar.Team WHERE groupId = ?`;
   try {
