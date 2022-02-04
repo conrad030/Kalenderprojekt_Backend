@@ -9,11 +9,12 @@ Content-Type: application/json
 
 ###
 //dGVzdDphYmM= correct
+# eWFrdXA6YWJj
 //dGVzdDp3cm9uZw== wrong password
 //d3Jvbmc6d3Jvbmc= wrong data
 //YWRtaW46YWRtaW4xMjM= admin
 POST http://localhost:8000/users/login
-Authorization: Bearer eWFrdXA6YWJj
+Authorization: Bearer dGVzdDphYmM=
 
 
 ###

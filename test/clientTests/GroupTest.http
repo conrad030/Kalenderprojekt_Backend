@@ -4,7 +4,8 @@ Content-Type: application/json
 
 {
   "name": "Group for Team Test",
-  "colorCode": "DDDDDD"
+  "colorCode": "DDDDDD",
+  "password": "abc"
 }
 
 ###
@@ -26,8 +27,7 @@ Content-Type: application/json
 ###
 
 # Invite and add user to group
-GET http://localhost:8000/groups/invitation/YMuV4
-Content-Type: application/json
+GET http://localhost:8000/groups/invitation?invCode=PP55k&password=abc
 
 ###
 # Update group
