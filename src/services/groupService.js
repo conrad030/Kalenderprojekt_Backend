@@ -313,7 +313,7 @@ exports.joinGroup = async function (invCode, password, userId) {
     let [groups, fields] = await db.query(groupQuery, [invCode]);
     if (groups.length == 0) throw new ServiceError("Not found", 404);
     if (groups[0].password) {
-      if (!password) throw new ServiceError("Invalid data", 400); //If password param is missing
+      if (!password) throw new ServiceError("Missing password", 403); //If password param is missing
       let allowed = await bcrypt.compare(password, groups[0].password);
       if (!allowed) throw new ServiceError("Wrong password", 403); // If wrong password
     }
