@@ -9,6 +9,12 @@ router.post("/create", middleware.checkAuthentication, controller.create);
 // Get all Groups
 router.get("/", middleware.checkAuthentication, controller.findAll);
 
+// Get invitation code
+/**
+ * ? Should this be a POST instead?
+ */
+router.get("/invitation", middleware.checkAuthentication, controller.joinGroup);
+
 // Get Group
 router.get("/:id", middleware.checkAuthentication, controller.findOne);
 
@@ -24,16 +30,6 @@ router.get(
   "/appointments/:id",
   middleware.checkAuthentication,
   controller.findOne
-);
-
-// Get invitation code
-/**
- * ? Should this be a POST instead?
- */
-router.get(
-  "/invitation/:invCode",
-  middleware.checkAuthentication,
-  controller.joinGroup
 );
 
 // Update Group

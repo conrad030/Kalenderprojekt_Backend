@@ -301,7 +301,7 @@ async function isGroupAdmin(groupId, userId) {
  * @param {string} invCode
  * @param {number} userId
  */
-exports.joinGroup = async function (invCode, userId) {
+exports.joinGroup = async function (invCode, password, userId) {
   if (!invCode || !userId) throw new ServiceError("Invalid data", 400);
   let checkQuery = `SELECT * FROM SmartCalendar.Group_Member WHERE userId = ? AND groupId = ?`;
   let query = `INSERT INTO SmartCalendar.Group_Member (groupId, userId, isAdmin)
@@ -310,14 +310,19 @@ exports.joinGroup = async function (invCode, userId) {
   WHERE invitationCode = ?`;
 
   try {
-    let [group, fields] = await db.query(groupQuery, [invCode]);
-    if (group.length == 0) throw new ServiceError("Not found", 404);
+    let [groups, fields] = await db.query(groupQuery, [invCode]);
+    if (groups[0].password) {
+      if (!password) throw new ServiceError("Invalid data", 400); //If password param is missing
+      let allowed = await bcrypt.compare(password, groups[0].password);
+      if (!allowed) throw new ServiceError("Wrong password", 403); // If wrong password
+    }
+    if (groups.length == 0) throw new ServiceError("Not found", 404);
     let [member, memberFields] = await db.query(checkQuery, [
       userId,
-      group[0].id,
+      groups[0].id,
     ]);
     if (!member.length == 0) throw new ServiceError("User already exists", 400);
-    await db.query(query, [group[0].id, userId, false]);
+    await db.query(query, [groups[0].id, userId, false]);
   } catch (e) {
     if (e instanceof ServiceError) throw e;
     throw new ServiceError("Internal Server Error", 500);
