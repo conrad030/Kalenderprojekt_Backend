@@ -38,15 +38,22 @@ exports.addMember = async function (teamId, userId) {
   VALUES (?, ?)`;
   try {
     // Does team exist?
-    await this.findOne(teamId);
+    let team = await this.findOne(teamId);
+    // Is user group member?
+    if (!(await groupService.isGroupMember(userId, team.groupId)))
+      throw new ServiceError("Not group member", 403);
     // Does user exist?
-    await userService.findOne(userId);
+    let newMember = await userService.findOne(userId);
     // Is user team member?
     if (await this.isTeamMember(userId, teamId))
       throw new ServiceError("Already member of team", 409);
     await db.query(insertQuery, [teamId, userId]);
-    let newMember = await this.findMember(userId, teamId);
-    return newMember;
+    return {
+      userId: newMember.userId,
+      username: newMember.username,
+      email: newMember.email,
+      isAdmin: newMember.isAdmin === 1,
+    };
   } catch (e) {
     if (e instanceof ServiceError) throw e;
     throw new ServiceError("Internal Server Error", 500);
@@ -66,11 +73,17 @@ exports.removeMember = async function (teamId, userId) {
     // Does team exist?
     await this.findOne(teamId);
     // Does user exist?
-    await userService.findOne(userId);
+    let remMember = await userService.findOne(userId);
     // Is user team member?
     if (!(await this.isTeamMember(userId, teamId)))
       throw new ServiceError("Not found", 404);
     await db.query(removeQuery, [teamId, userId]);
+    return {
+      userId: remMember.userId,
+      username: remMember.username,
+      email: remMember.email,
+      isAdmin: remMember.isAdmin === 1,
+    };
   } catch (e) {
     if (e instanceof ServiceError) throw e;
     throw new ServiceError("Internal Server Error", 500);
@@ -194,12 +207,15 @@ exports.delete = async function (id) {
 
 exports.getMembers = async function (teamId) {
   let query = `
-  SELECT user.id, user.username, user.email
+  SELECT user.id, user.username, user.email, user.isAdmin
   FROM SmartCalendar.User user, SmartCalendar.User_Team member
   WHERE user.id = member.userId
   AND member.teamId = ?;`;
   try {
     let [users, _] = await db.query(query, [teamId]);
+    users.forEach((user) => {
+      user.isAdmin = user.isAdmin === 1;
+    });
     return users;
   } catch (error) {
     throw new ServiceError("Internal server error", 500);

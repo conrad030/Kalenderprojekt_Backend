@@ -14,7 +14,7 @@ Content-Type: application/json
 //d3Jvbmc6d3Jvbmc= wrong data
 //YWRtaW46YWRtaW4xMjM= admin
 POST http://localhost:8000/users/login
-Authorization: Bearer dGVzdDphYmM=
+Authorization: Bearer eWFrdXA6YWJj
 
 
 ###

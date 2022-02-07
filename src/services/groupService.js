@@ -124,9 +124,12 @@ exports.findAll = async function (groupId) {
 };
 
 exports.structure = async function (group) {
-  let query = `SELECT * FROM SmartCalendar.Group_Member WHERE groupId = ?`;
+  let userQuery = `SELECT user.id, user.username, user.isAdmin FROM SmartCalendar.User user, SmartCalendar.Group_Member member WHERE member.groupId = ? AND user.id = member.userId;`;
   let teamsQuery = `SELECT * FROM SmartCalendar.Team WHERE groupId = ?`;
-  let [members, fields] = await db.query(query, [group.id]);
+  let [members, fields] = await db.query(userQuery, [group.id]);
+  members.forEach((member) => {
+    member.isAdmin = member.isAdmin === 1;
+  });
   // Don't use findAllTeams to avoid recursion
   let [t, f] = await db.query(teamsQuery, [group.id]);
   let teamsPromise = t.map(async (team) => {
@@ -350,6 +353,6 @@ const findMemberOfGroup = async function (userId, groupId) {
 };
 
 exports.isGroupMember = async function (userId, groupId) {
-  let member = await findMemberOfGroup(userId, groupId);
+  console.log(await findMemberOfGroup(userId, groupId));
   return (await findMemberOfGroup(userId, groupId)) !== null;
 };
