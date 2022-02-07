@@ -8,7 +8,7 @@ POST http://localhost:8000/appointments
 Content-Type: application/json
 
 {
-  "groupId": 23,
+  "groupId": 36,
   "title": "Blue Meeting",
   "startDate": "2022-01-30",
   "startTime": "10:00:00",
@@ -27,12 +27,12 @@ GET http://localhost:8080/appointments/3
 DELETE http://localhost:8080/appointments/3
 
 ###
-PUT http://localhost:8080/appointments/3
+PUT http://localhost:8000/appointments/6
 Content-Type: application/json
 
 {
   "title": "Projektmeeting 2",
-  "startDate": "2021-12-15",
+  "startDate": "2022.12/15",
   "startTime": "12:00:00",
   "endTime": "13:30:00",
   "description": "Ein sehr wichtiges Projektmeeting",

@@ -14,8 +14,12 @@ GET http://localhost:8000/groups/19
 
 ###
 
+GET http://localhost:8000/groups
+
+###
+
 # Get all teams for group
-GET http://localhost:8000/groups/teams/1
+GET http://localhost:8000/groups/teams/19
 Content-Type: application/json
 
 ###
@@ -27,7 +31,7 @@ Content-Type: application/json
 ###
 
 # Invite and add user to group
-GET http://localhost:8000/groups/invitation?invCode=PP55k&password=abc
+GET http://localhost:8000/groups/invitation?invCode=0Raww&password=abc
 
 ###
 # Update group
