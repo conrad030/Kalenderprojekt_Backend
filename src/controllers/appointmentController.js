@@ -7,24 +7,13 @@ const s3 = new AWS.S3({
 });
 
 exports.getAppointmentsForUser = async function (req, res) {
-  let inFuture = req.query.inFuture ?? false;
+  let inFuture = req.query.inFuture === "true" ?? false; // False unless "true"
+  let acceptedInv = !(req.query.acceptedInv === "false") ?? true; // True unless "false"
   try {
     let appointments = await appointmentService.getAppointmentsForUser(
       req.session.userId,
-      inFuture
-    );
-    res.status(200).json(appointments);
-  } catch (error) {
-    res.status(error.statusCode).json({ message: error.message });
-  }
-};
-
-exports.getAppointmentsForUserInvPending = async function (req, res) {
-  try {
-    let appointments = await appointmentService.getAppointmentsForUser(
-      req.session.userId,
-      true,
-      false
+      inFuture,
+      acceptedInv
     );
     res.status(200).json(appointments);
   } catch (error) {
