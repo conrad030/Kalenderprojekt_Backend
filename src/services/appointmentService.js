@@ -379,3 +379,35 @@ const findFilesForAppointment = async function (appointmentId) {
     throw new ServiceError("Internal server error", 500);
   }
 };
+
+//Inspired by https://www.geeksforgeeks.org/how-to-calculate-the-number-of-days-between-two-dates-in-javascript/
+exports.deleteFutureAppointments = async function (appointmentId, date) {
+  let appointment = await this.findOne(appointmentId);
+  if (!appointment) throw new ServiceError("Appointment not found", 404);
+  let startDate = new Date(appointment.startDate);
+  let endDate = new Date(date);
+  if (startDate >= endDate)
+    throw new ServiceError(
+      "date must be greater than startDate of appointment",
+      400
+    );
+  let daysBetweenDates =
+    (endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24);
+
+  // newMaxOccurences = (endDate - startDate) / repeatInterval
+  let newMaxOccurences = Math.floor(
+    daysBetweenDates / appointment.repeatInterval
+  );
+  let query = `
+  UPDATE SmartCalendar.Appointment SET
+  maxOccurences = ?
+  WHERE id = ?;
+  `;
+  try {
+    await db.query(query, [newMaxOccurences, appointmentId]);
+    let updatedAppointment = await this.findOne(appointmentId);
+    return updatedAppointment;
+  } catch (error) {
+    throw new ServiceError("Internal server error", 500);
+  }
+};

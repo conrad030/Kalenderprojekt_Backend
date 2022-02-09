@@ -7,24 +7,13 @@ const s3 = new AWS.S3({
 });
 
 exports.getAppointmentsForUser = async function (req, res) {
-  let inFuture = req.query.inFuture ?? false;
+  let inFuture = req.query.inFuture === "true" ?? false; // False unless "true"
+  let acceptedInv = !(req.query.acceptedInv === "false") ?? true; // True unless "false"
   try {
     let appointments = await appointmentService.getAppointmentsForUser(
       req.session.userId,
-      inFuture
-    );
-    res.status(200).json(appointments);
-  } catch (error) {
-    res.status(error.statusCode).json({ message: error.message });
-  }
-};
-
-exports.getAppointmentsForUserInvPending = async function (req, res) {
-  try {
-    let appointments = await appointmentService.getAppointmentsForUser(
-      req.session.userId,
-      true,
-      false
+      inFuture,
+      acceptedInv
     );
     res.status(200).json(appointments);
   } catch (error) {
@@ -170,11 +159,23 @@ exports.removeMember = async function (req, res) {
 
 exports.acceptInvitation = async function (req, res) {
   try {
-    await appointmentService.acceptInvitation(
+    let appointment = await appointmentService.acceptInvitation(
       req.params.id,
       req.session.userId
     );
-    res.status(200).json({ message: "Accepted invitation" });
+    res.status(200).json(appointment);
+  } catch (error) {
+    res.status(error.statusCode).json({ message: error.message });
+  }
+};
+
+exports.declineInvitation = async function (req, res) {
+  try {
+    let appointment = await appointmentService.declineInvitation(
+      req.params.id,
+      req.session.userId
+    );
+    res.status(200).json(appointment);
   } catch (error) {
     res.status(error.statusCode).json({ message: error.message });
   }
@@ -223,6 +224,19 @@ exports.uploadFile = async function (req, res) {
     }
   } catch (error) {
     console.log(error);
+    res.status(error.statusCode).json({ message: error.message });
+  }
+};
+
+exports.deleteFutureAppointments = async function (req, res) {
+  let { appointmentId, date } = req.query;
+  try {
+    let updatedAppointment = await appointmentService.deleteFutureAppointments(
+      appointmentId,
+      date
+    );
+    res.status(200).json(updatedAppointment);
+  } catch (error) {
     res.status(error.statusCode).json({ message: error.message });
   }
 };
