@@ -65,6 +65,14 @@ router.post(
   controller.uploadFile
 );
 
+// Delete future Appointments
+router.post(
+  "/deleteFutureAppointments",
+  middleware.checkAuthentication,
+  middleware.checkIfAppointmentAdmin,
+  controller.deleteFutureAppointments
+);
+
 // Delete Appointment
 router.delete(
   "/:id",

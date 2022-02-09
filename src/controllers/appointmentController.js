@@ -227,3 +227,16 @@ exports.uploadFile = async function (req, res) {
     res.status(error.statusCode).json({ message: error.message });
   }
 };
+
+exports.deleteFutureAppointments = async function (req, res) {
+  let { appointmentId, date } = req.query;
+  try {
+    let updatedAppointment = await appointmentService.deleteFutureAppointments(
+      appointmentId,
+      date
+    );
+    res.status(200).json(updatedAppointment);
+  } catch (error) {
+    res.status(error.statusCode).json({ message: error.message });
+  }
+};

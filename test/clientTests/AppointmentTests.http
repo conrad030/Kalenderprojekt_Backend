@@ -4,7 +4,7 @@ GET http://localhost:8080/appointments
 GET http://localhost:8000/appointments?inFuture=false&acceptedInv=true
 
 ###
-POST http://localhost:8000/appointments
+POST http://localhost:8080/appointments
 Content-Type: application/json
 
 {
@@ -69,3 +69,6 @@ Content-Disposition: form-data; name="file"; filename="testImage.png"
 
 < ./../utils/testImage.png
 --WebAppBoundary--
+
+###
+POST http://localhost:8080/appointments/deleteFutureAppointments?appointmentId=9&date=2022-02-15
