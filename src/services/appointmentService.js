@@ -279,7 +279,32 @@ exports.acceptInvitation = async function (appointmentId, userId) {
   `;
   try {
     await db.query(query, [userId, appointmentId]);
-    return this.findone(appointmentId);
+    return await this.findOne(appointmentId);
+  } catch (error) {
+    throw new ServiceError("Internal Server Error", 500);
+  }
+};
+
+exports.declineInvitation = async function (appointmentId, userId) {
+  let appointment = await this.findOne(appointmentId);
+  if (!appointment) throw new ServiceError("Appointment not found", 404);
+  let user = await userService.findOne(userId);
+  if (!user) throw new ServiceError("User not found", 404);
+  let member = await this.findMemberForAppointment(userId, appointmentId);
+  if (!member) {
+    throw new ServiceError("User is no member of appointment", 404);
+  } else if (member.acceptedInvitation) {
+    throw new ServiceError("User already accepted invitation", 400);
+  }
+
+  let query = `
+  DELETE FROM SmartCalendar.Appointment_Member
+  WHERE userId = ?
+  AND appointmentId = ?;
+  `;
+  try {
+    await db.query(query, [userId, appointmentId]);
+    return await this.findOne(appointmentId);
   } catch (error) {
     throw new ServiceError("Internal Server Error", 500);
   }

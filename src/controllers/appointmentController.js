@@ -159,11 +159,31 @@ exports.removeMember = async function (req, res) {
 
 exports.acceptInvitation = async function (req, res) {
   try {
+<<<<<<< HEAD
     let acceptedAppo = await appointmentService.acceptInvitation(
       req.params.id,
       req.session.userId
     );
     res.status(200).json(acceptedAppo);
+=======
+    let appointment = await appointmentService.acceptInvitation(
+      req.params.id,
+      req.session.userId
+    );
+    res.status(200).json(appointment);
+  } catch (error) {
+    res.status(error.statusCode).json({ message: error.message });
+  }
+};
+
+exports.declineInvitation = async function (req, res) {
+  try {
+    let appointment = await appointmentService.declineInvitation(
+      req.params.id,
+      req.session.userId
+    );
+    res.status(200).json(appointment);
+>>>>>>> d65529e313e18e16cc4d2c1425df2a0433e9c317
   } catch (error) {
     res.status(error.statusCode).json({ message: error.message });
   }

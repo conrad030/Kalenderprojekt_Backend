@@ -46,6 +46,9 @@ router.delete(
 //Accept appointment invitation
 router.post("/member/acceptInvitation/:id", controller.acceptInvitation);
 
+//Decline appointment invitation
+router.post("/member/declineInvitation/:id", controller.declineInvitation);
+
 //Create exception for appointment
 router.post(
   "/createException",
