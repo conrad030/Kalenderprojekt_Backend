@@ -326,7 +326,7 @@ exports.joinGroup = async function (invCode, password, userId) {
     ]);
     if (!member.length == 0) throw new ServiceError("User already exists", 400);
     await db.query(query, [groups[0].id, userId, false]);
-    return groups[0];
+    return this.structure(groups[0]);
   } catch (e) {
     if (e instanceof ServiceError) throw e;
     throw new ServiceError("Internal Server Error", 500);
