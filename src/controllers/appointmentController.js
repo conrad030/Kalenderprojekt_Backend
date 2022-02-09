@@ -159,11 +159,11 @@ exports.removeMember = async function (req, res) {
 
 exports.acceptInvitation = async function (req, res) {
   try {
-    await appointmentService.acceptInvitation(
+    let acceptedAppo = await appointmentService.acceptInvitation(
       req.params.id,
       req.session.userId
     );
-    res.status(200).json({ message: "Accepted invitation" });
+    res.status(200).json(acceptedAppo);
   } catch (error) {
     res.status(error.statusCode).json({ message: error.message });
   }

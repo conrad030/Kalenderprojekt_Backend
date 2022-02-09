@@ -279,6 +279,7 @@ exports.acceptInvitation = async function (appointmentId, userId) {
   `;
   try {
     await db.query(query, [userId, appointmentId]);
+    return this.findone(appointmentId);
   } catch (error) {
     throw new ServiceError("Internal Server Error", 500);
   }
