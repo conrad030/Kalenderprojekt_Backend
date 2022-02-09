@@ -8,14 +8,13 @@ POST http://localhost:8080/appointments
 Content-Type: application/json
 
 {
-  "groupId":1,
-  "title": "Neues Meeting",
-  "startDate": "2022-02-10",
-  "startTime": "16:25",
-  "endTime": "16:30",
-  "colorCode": "00d084",
-  "repeatInterval": 2,
-  "maxOccurences": 10
+  "groupId": 37,
+  "title": "Pending Meeting",
+  "startDate": "2022-02-28",
+  "startTime": "10:00:00",
+  "endTime": "11:00:00",
+  "colorCode": "0000FF",
+  "description": "Erstes Meeting"
 }
 
 ###

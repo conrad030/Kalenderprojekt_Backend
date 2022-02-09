@@ -124,9 +124,12 @@ exports.findAll = async function (groupId) {
 };
 
 exports.structure = async function (group) {
-  let query = `SELECT * FROM SmartCalendar.Group_Member WHERE groupId = ?`;
+  let userQuery = `SELECT user.id, user.username, user.isAdmin FROM SmartCalendar.User user, SmartCalendar.Group_Member member WHERE member.groupId = ? AND user.id = member.userId;`;
   let teamsQuery = `SELECT * FROM SmartCalendar.Team WHERE groupId = ?`;
-  let [members, fields] = await db.query(query, [group.id]);
+  let [members, fields] = await db.query(userQuery, [group.id]);
+  members.forEach((member) => {
+    member.isAdmin = member.isAdmin === 1;
+  });
   // Don't use findAllTeams to avoid recursion
   let [t, f] = await db.query(teamsQuery, [group.id]);
   let teamsPromise = t.map(async (team) => {
@@ -301,7 +304,7 @@ async function isGroupAdmin(groupId, userId) {
  * @param {string} invCode
  * @param {number} userId
  */
-exports.joinGroup = async function (invCode, userId) {
+exports.joinGroup = async function (invCode, password, userId) {
   if (!invCode || !userId) throw new ServiceError("Invalid data", 400);
   let checkQuery = `SELECT * FROM SmartCalendar.Group_Member WHERE userId = ? AND groupId = ?`;
   let query = `INSERT INTO SmartCalendar.Group_Member (groupId, userId, isAdmin)
@@ -310,14 +313,20 @@ exports.joinGroup = async function (invCode, userId) {
   WHERE invitationCode = ?`;
 
   try {
-    let [group, fields] = await db.query(groupQuery, [invCode]);
-    if (group.length == 0) throw new ServiceError("Not found", 404);
+    let [groups, fields] = await db.query(groupQuery, [invCode]);
+    if (groups.length == 0) throw new ServiceError("Not found", 404);
+    if (groups[0].password) {
+      if (!password) throw new ServiceError("Missing password", 403); //If password param is missing
+      let allowed = await bcrypt.compare(password, groups[0].password);
+      if (!allowed) throw new ServiceError("Wrong password", 403); // If wrong password
+    }
     let [member, memberFields] = await db.query(checkQuery, [
       userId,
-      group[0].id,
+      groups[0].id,
     ]);
     if (!member.length == 0) throw new ServiceError("User already exists", 400);
-    await db.query(query, [group[0].id, userId, false]);
+    await db.query(query, [groups[0].id, userId, false]);
+    return this.structure(groups[0]);
   } catch (e) {
     if (e instanceof ServiceError) throw e;
     throw new ServiceError("Internal Server Error", 500);
@@ -344,6 +353,6 @@ const findMemberOfGroup = async function (userId, groupId) {
 };
 
 exports.isGroupMember = async function (userId, groupId) {
-  let member = await findMemberOfGroup(userId, groupId);
+  console.log(await findMemberOfGroup(userId, groupId));
   return (await findMemberOfGroup(userId, groupId)) !== null;
 };

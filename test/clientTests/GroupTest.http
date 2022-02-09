@@ -3,8 +3,9 @@ POST http://localhost:8000/groups/create
 Content-Type: application/json
 
 {
-  "name": "Group for Team Test",
-  "colorCode": "DDDDDD"
+  "name": "Group for  Pending Test",
+  "colorCode": "DDDDDD",
+  "password": "abc"
 }
 
 ###
@@ -13,8 +14,12 @@ GET http://localhost:8000/groups/19
 
 ###
 
+GET http://localhost:8000/groups
+
+###
+
 # Get all teams for group
-GET http://localhost:8000/groups/teams/1
+GET http://localhost:8000/groups/teams/19
 Content-Type: application/json
 
 ###
@@ -26,8 +31,7 @@ Content-Type: application/json
 ###
 
 # Invite and add user to group
-GET http://localhost:8000/groups/invitation/YMuV4
-Content-Type: application/json
+GET http://localhost:8000/groups/invitation?invCode=KtZtK&password=abc
 
 ###
 # Update group

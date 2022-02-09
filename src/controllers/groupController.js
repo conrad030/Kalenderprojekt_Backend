@@ -50,10 +50,11 @@ exports.findOne = async (req, res) => {
 
 exports.joinGroup = async (req, res) => {
   const id = req.session.userId;
-  const invCode = req.params.invCode;
+  const { invCode, password } = req.query;
+
   try {
-    await groupService.joinGroup(invCode, id);
-    res.status(200).json({ message: "User joined Group" });
+    let group = await groupService.joinGroup(invCode, password, id);
+    res.status(200).json(group);
   } catch (error) {
     console.error(error.message);
     res.status(error.statusCode).json({ message: error.message });
