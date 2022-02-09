@@ -124,7 +124,7 @@ exports.findAll = async function (groupId) {
 };
 
 exports.structure = async function (group) {
-  let userQuery = `SELECT user.id, user.username, user.isAdmin FROM SmartCalendar.User user, SmartCalendar.Group_Member member WHERE member.groupId = ? AND user.id = member.userId;`;
+  let userQuery = `SELECT user.id, user.username, member.isAdmin FROM SmartCalendar.User user, SmartCalendar.Group_Member member WHERE member.groupId = ? AND user.id = member.userId;`;
   let teamsQuery = `SELECT * FROM SmartCalendar.Team WHERE groupId = ?`;
   let [members, fields] = await db.query(userQuery, [group.id]);
   members.forEach((member) => {
