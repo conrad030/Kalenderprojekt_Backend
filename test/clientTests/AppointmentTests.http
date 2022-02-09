@@ -48,6 +48,9 @@ DELETE http://localhost:8000/appointments/member?appointmentId=3&userId=2
 ### Accept invitation to Appointment
 POST http://localhost:8000/appointments/member/acceptInvitation/10
 
+### Decline invitation to Appointment
+POST http://localhost:8000/appointments/member/declineInvitation/10
+
 ### Create Appointment Exception
 POST http://localhost:8080/appointments/createException
 Content-Type: application/json
