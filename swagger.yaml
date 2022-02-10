@@ -294,16 +294,22 @@ paths:
           description: Not authorized
         "404":
           description: Not found
-  /groups/invitation/{code}:
+  /groups/invitation:
     post:
       tags:
         - Group
       description: To acces a group
       parameters:
-        - in: path
-          name: code
-          description: Pass group invitation code
+        - in: query
+          name: invCode
+          description: invitation Code of group
           required: true
+          schema:
+            type: string
+        - in: query
+          name: password
+          description: Optional password of group
+          required: false
           schema:
             type: string
       responses:
@@ -313,6 +319,8 @@ paths:
           description: User is already member
         "401":
           description: Missing authentication
+        "403":
+          description: Wrong password
         "404":
           description: Not found
   /appointments:
@@ -566,7 +574,28 @@ paths:
           description: not authorized
         "404":
           description: Appointment not found
-  /uploadFile/{id}:
+  /member/declineInvitation/{id}:
+    post:
+      parameters:
+        - in: path
+          name: id
+          description: Pass specific ID of appointment
+          required: true
+          schema:
+            type: integer
+      tags:
+        - Appointment
+      description: Decline invitation to appointment
+      responses:
+        "200":
+          description: Invitation declined
+        "400":
+          description: user already accepted invitation
+        "401":
+          description: not authorized
+        "404":
+          description: Appointment not found
+  /appointments/uploadFile/{id}:
     post:
       tags:
         - Appointment
@@ -596,6 +625,38 @@ paths:
                 $ref: "#/components/schemas/AppointmentSchema"
         "403":
           description: Wrong file format
+        "401":
+          description: not authorized
+        "404":
+          description: Appointment not found
+  /deleteFutureAppointments:
+    post:
+      tags:
+        - Appointment
+      description: delete all future appointments to sent date
+      parameters:
+        - in: query
+          name: appointmentId
+          description: Pass specific ID of appointment
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: date
+          description: Pass date till where future appointments should be deleted
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Future appointments deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppointmentSchema"
+        "400":
+          description: Date is not greater than startDate of Appointment
         "401":
           description: not authorized
         "404":
@@ -722,7 +783,7 @@ paths:
           description: missing rights
         "404":
           description: not found
-  /team/member:
+  /teams/member:
     post:
       parameters:
         - in: query
@@ -783,6 +844,31 @@ paths:
           description: Not authorized
         "404":
           description: Not found
+  /teams/members/{id}:
+    get:
+      description: Get all members of a team
+      parameters:
+        - in: path
+          name: id
+          description: Pass specific ID of team
+          required: true
+          schema:
+            type: integer
+      tags:
+        - Team
+      responses:
+        "200":
+          description: All members of the team
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserTeamSchema"
+        "401":
+          description: not authorized
+        "404":
+          description: Team or user not found
 components:
   securitySchemes:
     BasicAuth:
@@ -1011,7 +1097,7 @@ components:
         name:
           type: string
           example: "Team 1"
-        color:
+        colorCode:
           type: string
           example: "B3B3B3"
     UserTeamSchema:
